@@ -4,6 +4,7 @@ import com.example.oopcw.ticketingsystem.validation.Validation;
 import com.example.oopcw.ticketingsystem.constant.configurationFiles;
 
 import com.example.oopcw.ticketingsystem.Configuration;
+import com.example.oopcw.ticketingsystem.validation.WriteFiles;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -45,6 +46,7 @@ public class ConfigurationService {
 
         Scanner scanner = new Scanner(System.in);
         Configuration configuration = new Configuration();
+        WriteFiles writeFiles = new WriteFiles();
         Validation validation = new Validation();
         boolean loop = true;
         while (loop) {
@@ -53,40 +55,34 @@ public class ConfigurationService {
             System.out.println("3. Change Release rate ");
             System.out.println("4. Change Purchase rate ");
             System.out.println("5. Change all ");
+            System.out.println("6. Exit");
             switch (scanner.nextLine()) {
                 case "1":
-
                     configuration.setMaxTicketCapacity(validation.getValidation(scanner, "Enter Max Ticket pool capacity :"));
+                    writeFiles.writeOnGson(configuration);
                     break;
-
                 case "2":
-                    System.out.println("Enter Total Ticket capacity for Vendors :");
-                    configuration.setMaxTicketCapacity(Integer.parseInt(scanner.nextLine()));
+                    configuration.setTotalTickets(validation.getValidation(scanner, "Enter Total Ticket capacity for Vendors : "));
+                    writeFiles.writeOnGson(configuration);
                     break;
                 case "3":
-                    System.out.println("Enter THE Release rate :");
-                    int ReleaseRate = scanner.nextInt();
-                    configuration.setMaxTicketCapacity(ReleaseRate);
+                    configuration.setTicketReleaseRate(validation.getValidation(scanner, "Enter The Release rate : "));
+                    writeFiles.writeOnGson(configuration);
                     break;
-
                 case "4":
-                    System.out.println("Enter Purchase rate :");
-                    scanner.nextLine();
-                    configuration.setMaxTicketCapacity(Integer.parseInt(scanner.nextLine()));
+                    configuration.setCustomerRetrievalRate(validation.getValidation(scanner, "Enter Purchase rate : "));
+                    writeFiles.writeOnGson(configuration);
                     break;
                 case "5":
-                    System.out.println("Enter Max Ticket pool capacity :");
-                    scanner.nextLine();
-                    configuration.setMaxTicketCapacity(Integer.parseInt(scanner.nextLine()));
-                    System.out.println("Enter Total Ticket capacity for Vendors :");
-                    scanner.nextLine();
-                    configuration.setMaxTicketCapacity(Integer.parseInt(scanner.nextLine()));
-                    System.out.println("Enter THE Release rate :");
-                    scanner.nextLine();
-                    configuration.setMaxTicketCapacity(Integer.parseInt(scanner.nextLine()));
-                    System.out.println("Enter Purchase rate :");
-                    scanner.nextLine();
-                    configuration.setMaxTicketCapacity(Integer.parseInt(scanner.nextLine()));
+                    configuration.setMaxTicketCapacity(validation.getValidation(scanner, "Enter Max Ticket pool capacity :"));
+                    configuration.setTotalTickets(validation.getValidation(scanner, "Enter Total Ticket capacity for Vendors : "));
+                    configuration.setTicketReleaseRate(validation.getValidation(scanner, "Enter The Release rate : "));
+                    configuration.setCustomerRetrievalRate(validation.getValidation(scanner, "Enter Purchase rate : "));
+                    writeFiles.writeOnGson(configuration);
+                    break;
+                case "6":
+                    System.out.println("Goodbye");
+                    loop = false;
                     break;
 
                 default:
