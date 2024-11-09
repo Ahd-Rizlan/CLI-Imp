@@ -26,26 +26,29 @@ public class ConfigurationService {
     }
 
     public Configuration readGson() throws IOException {
-        File configFile = new File(configurationFiles.configurationFile);
-
-        if (!configFile.exists()) {
-            System.out.println("Configuration file does not exist");
-        } else {
-            Gson gson = new Gson();
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(configurationFiles.configurationFile));
-            Configuration configuration = gson.fromJson(bufferedReader, Configuration.class);
-            bufferedReader.close();
-            return configuration;
-        }
-        return null;
+//        File configFile = new File(configurationFiles.configurationFile);
+//
+//        if (!configFile.exists()) {
+//            System.out.println("Configuration file does not exist");
+//        } else {
+        Gson gson = new Gson();
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(configurationFiles.configurationFile));
+        Configuration configuration = gson.fromJson(bufferedReader, Configuration.class);
+        bufferedReader.close();
+        return configuration;
     }
+//        return null;
+//    }
 
     public void setConfigurationFile() {
+        //Check weather the file is there are not if there pre-assign values to valriables so we can update one record
         Scanner scanner = new Scanner(System.in);
         Configuration configuration = new Configuration();
         HandleFiles writeFiles = new HandleFiles();
         Validation validation = new Validation();
-        printConfigFile(configuration);
+
+        getConfigurationFile("So Configuration File Found \nCreating New Configuration File");
+        // if file is exist it updates the values if not create a new file
         boolean loop = true;
         while (loop) {
             System.out.println("1. Change Max Ticket pool capacity ");
@@ -81,7 +84,8 @@ public class ConfigurationService {
                     writeFiles.writeOnGson(configuration);
                     break;
                 case "6":
-                    System.out.println("Goodbye");
+                    System.out.println("Configuration file updated");
+                    System.out.println();
                     loop = false;
                     break;
 
@@ -93,14 +97,14 @@ public class ConfigurationService {
         }
     }
 
-    public void getConfigurationFile() {
+    public void getConfigurationFile(String message) {
         //put this where Starting TODO
         Configuration configuration = new Configuration();
         File configFile = new File(configurationFiles.configurationFile);
         if (!configFile.exists()) {
-            System.out.println();
-            System.out.println("Configuration file does not exist");
-            System.out.println("Create a new configuration file \n");
+            System.out.println(message);
+            //can use with a custom message
+            System.out.println("\n");
         } else {
             try {
                 //PreSetting Values from Files

@@ -16,9 +16,8 @@ public class Main {
     public void minTemplate() {
         Scanner input = new Scanner(System.in);
         ConfigurationService configurationService = new ConfigurationService();
-
+        System.out.println("Welcome to the Ticketing Simulation System\n");
         while (true) {
-            System.out.println("Welcome to the Ticketing Simulation System");
             System.out.println("Please enter your choice");
             System.out.println("1. Start System");
             System.out.println("2. Change configuration Values");
@@ -27,7 +26,7 @@ public class Main {
             switch (input.nextLine().toLowerCase()) {
                 case "1":
                     System.out.println("Starting The Simulation");
-                    configurationService.getConfigurationFile(); //
+                    configurationService.getConfigurationFile("No File Found, Creating a New Configuration File"); //
                     break;
                 case "2":
                     System.out.println("Change Values configurations come here");
