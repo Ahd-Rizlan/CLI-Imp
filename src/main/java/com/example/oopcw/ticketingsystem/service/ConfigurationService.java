@@ -4,7 +4,7 @@ import com.example.oopcw.ticketingsystem.validation.Validation;
 import com.example.oopcw.ticketingsystem.constant.configurationFiles;
 
 import com.example.oopcw.ticketingsystem.Configuration;
-import com.example.oopcw.ticketingsystem.validation.WriteFiles;
+import com.example.oopcw.ticketingsystem.validation.HandleFiles;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -26,28 +26,29 @@ public class ConfigurationService {
     }
 
     public Configuration readGson() throws IOException {
-        File configFile = new File(configurationFiles.configurationFile);
-
-        if (!configFile.exists()) {
-            System.out.println("Configuration file does not exist");
-            System.out.println("Creating new configuration file");
-
-        } else {
-            Gson gson = new Gson();
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(configurationFiles.configurationFile));
-            Configuration configuration = gson.fromJson(bufferedReader, Configuration.class);
-            bufferedReader.close();
-            return configuration;
-        }
-        return null;
+//        File configFile = new File(configurationFiles.configurationFile);
+//
+//        if (!configFile.exists()) {
+//            System.out.println("Configuration file does not exist");
+//        } else {
+        Gson gson = new Gson();
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(configurationFiles.configurationFile));
+        Configuration configuration = gson.fromJson(bufferedReader, Configuration.class);
+        bufferedReader.close();
+        return configuration;
     }
+//        return null;
+//    }
 
-    public void configurationTemplate() {
-
+    public void setConfigurationFile() {
+        //Check weather the file is there are not if there pre-assign values to valriables so we can update one record
         Scanner scanner = new Scanner(System.in);
         Configuration configuration = new Configuration();
-        WriteFiles writeFiles = new WriteFiles();
+        HandleFiles writeFiles = new HandleFiles();
         Validation validation = new Validation();
+
+        getConfigurationFile("So Configuration File Found \nCreating New Configuration File");
+        // if file is exist it updates the values if not create a new file
         boolean loop = true;
         while (loop) {
             System.out.println("1. Change Max Ticket pool capacity ");
@@ -56,10 +57,12 @@ public class ConfigurationService {
             System.out.println("4. Change Purchase rate ");
             System.out.println("5. Change all ");
             System.out.println("6. Exit");
+            System.out.println("Enter your choice :");
             switch (scanner.nextLine()) {
                 case "1":
                     configuration.setMaxTicketCapacity(validation.getValidation(scanner, "Enter Max Ticket pool capacity :"));
                     writeFiles.writeOnGson(configuration);
+                    //Update only one TODO
                     break;
                 case "2":
                     configuration.setTotalTickets(validation.getValidation(scanner, "Enter Total Ticket capacity for Vendors : "));
@@ -81,17 +84,57 @@ public class ConfigurationService {
                     writeFiles.writeOnGson(configuration);
                     break;
                 case "6":
-                    System.out.println("Goodbye");
+                    System.out.println("Configuration file updated");
+                    System.out.println();
                     loop = false;
                     break;
 
                 default:
-                    System.out.println("Invalid option");
-                    configurationTemplate();
+                    System.out.println("Invalid option \n Enter a Valid Option \n");
 
 
             }
         }
+    }
+
+    public void getConfigurationFile(String message) {
+        //put this where Starting TODO
+        Configuration configuration = new Configuration();
+        File configFile = new File(configurationFiles.configurationFile);
+        if (!configFile.exists()) {
+            System.out.println(message);
+            //can use with a custom message
+            System.out.println("\n");
+        } else {
+            try {
+                //PreSetting Values from Files
+                configuration.setTicketReleaseRate(readGson().getTicketReleaseRate());
+                configuration.setMaxTicketCapacity(readGson().getMaxTicketCapacity());
+                configuration.setTotalTickets(readGson().getTotalTickets());
+                configuration.setCustomerRetrievalRate(readGson().getCustomerRetrievalRate());
+
+
+            } catch (IOException ioExceptione) {
+                System.out.println("An error occurred while reading the configuration file");
+                ioExceptione.printStackTrace();
+            }
+        }
+    }
+
+    public void printConfigFile(Configuration configuration) {
+        try {
+            System.out.println("\n");
+            System.out.println("Total Tickets : " + readGson().getTotalTickets());
+            System.out.println("Customer Retrieval rate : " + configuration.getCustomerRetrievalRate());
+            System.out.println("Max TicketPool Capacity : " + configuration.getMaxTicketCapacity());
+            System.out.println("Ticket Relase rate : " + configuration.getTicketReleaseRate());
+            System.out.println("\n");
+
+        } catch (IOException ioExceptione) {
+            System.out.println("An error occurred while printing the configuration file");
+            ioExceptione.printStackTrace();
+        }
+        ;
     }
 
 }
