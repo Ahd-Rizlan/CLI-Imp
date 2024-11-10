@@ -15,11 +15,12 @@ public class ConfigurationService {
 
     public void writeGson(Configuration configuration) {
         try {
-            GsonBuilder builder = new GsonBuilder();
-            Gson gson = builder.create();
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            // Gson gson = builder.create();
             File file = new File(configurationFiles.configurationFile);
             Writer writer = new FileWriter(file);
             gson.toJson(configuration, writer);
+            //LOG DATA ADDED TODO
             writer.close();
 
         } catch (IOException e) {
@@ -37,6 +38,7 @@ public class ConfigurationService {
                 if (configFile.createNewFile()) {
                     System.out.println("New Configuration File Created");
                 }
+                return new Configuration();
             }
 
             Gson gson = new Gson();
@@ -47,7 +49,7 @@ public class ConfigurationService {
         } catch (IOException e) {
             System.out.println(e.getMessage());
             System.out.println("An error occurred while reading the configuration file");
-            return null;
+            return new Configuration();
         }
     }
 
@@ -56,13 +58,9 @@ public class ConfigurationService {
         Scanner scanner = new Scanner(System.in);
         HandleFiles writeFiles = new HandleFiles();
         Validation validation = new Validation();
+        //set old Values
         Configuration configuration = readGson();
 
-        if (configuration == null) {
-            //since Read Gson Return Null if file not found havve to create new config file
-            System.out.println("No existing configuration found. Creating a new configuration.");
-            configuration = new Configuration();
-        }
         boolean loop = true;
         while (loop) {
             System.out.println("1. Change Max Ticket pool capacity ");
@@ -111,16 +109,17 @@ public class ConfigurationService {
         }
     }
 
-    public void getConfigurationFile(String message) {
+    public void getConfigurationFile() {
         //put this where Starting TODO
 
-        Configuration configuration = new Configuration();
         File configFile = new File(configurationFiles.configurationFile);
         if (!configFile.exists()) {
-            System.out.println(message);
             //can use with a custom message
             System.out.println("\n");
+            setConfigurationFile();
+
         } else {
+            Configuration configuration = readGson();
             //setting Values From the File
             configuration.setTicketReleaseRate(readGson().getTicketReleaseRate());
             configuration.setMaxTicketCapacity(readGson().getMaxTicketCapacity());
@@ -133,7 +132,7 @@ public class ConfigurationService {
 
     public void printConfigFile(Configuration configuration) {
         System.out.println("\n");
-        System.out.println("Total Tickets : " + readGson().getTotalTickets());
+        System.out.println("Total Tickets : " + configuration.getTotalTickets());
         System.out.println("Customer Retrieval rate : " + configuration.getCustomerRetrievalRate());
         System.out.println("Max TicketPool Capacity : " + configuration.getMaxTicketCapacity());
         System.out.println("Ticket Relase rate : " + configuration.getTicketReleaseRate());
