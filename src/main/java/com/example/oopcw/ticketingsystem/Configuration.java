@@ -9,10 +9,11 @@ public class Configuration implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private int totalTickets;
-    private int customerRetrievalRate;
-    private int maxTicketCapacity;
+    private int totalTickets;//Number of tickets released at once
+    private int maxTicketCapacity;//max a pool can hold at a moment
     private int ticketReleaseRate;
+    private int customerRetrievalRate;
+
 
     public Configuration() {
 

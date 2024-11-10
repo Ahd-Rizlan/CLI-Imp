@@ -77,8 +77,12 @@ public class ConfigurationService {
                     //Update only one TODO
                     break;
                 case "2":
-                    configuration.setTotalTickets(validation.getValidation(scanner, "Enter Total Ticket capacity for Vendors : "));
-                    writeFiles.writeOnGson(configuration);
+                    int totalTickets;
+                    do {
+                        totalTickets = validation.getValidation(scanner, "Enter Total Ticket capacity for Vendors : ");
+                        configuration.setTotalTickets(totalTickets);
+                        writeFiles.writeOnGson(configuration);
+                    } while (!validation.validateTicketAmountforPool(totalTickets, configuration.getMaxTicketCapacity()));
                     break;
                 case "3":
                     configuration.setTicketReleaseRate(validation.getValidation(scanner, "Enter The Release rate : "));
