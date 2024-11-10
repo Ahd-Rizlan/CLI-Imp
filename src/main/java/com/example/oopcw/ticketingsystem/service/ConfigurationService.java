@@ -13,42 +13,56 @@ import java.util.Scanner;
 
 public class ConfigurationService {
 
-    public void writeGson(Configuration configuration) throws IOException {
+    public void writeGson(Configuration configuration) {
+        try {
+            GsonBuilder builder = new GsonBuilder();
+            Gson gson = builder.create();
+            File file = new File(configurationFiles.configurationFile);
+            Writer writer = new FileWriter(file);
+            gson.toJson(configuration, writer);
+            writer.close();
 
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        File file = new File(configurationFiles.configurationFile);
-        Writer writer = new FileWriter(file);
-        gson.toJson(configuration, writer);
-        writer.close();
-
-
+        } catch (IOException e) {
+            System.out.println("Unable to save configuration file");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    public Configuration readGson() throws IOException {
-//        File configFile = new File(configurationFiles.configurationFile);
-//
-//        if (!configFile.exists()) {
-//            System.out.println("Configuration file does not exist");
-//        } else {
-        Gson gson = new Gson();
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(configurationFiles.configurationFile));
-        Configuration configuration = gson.fromJson(bufferedReader, Configuration.class);
-        bufferedReader.close();
-        return configuration;
+    public Configuration readGson() {
+        try {
+            File configFile = new File(configurationFiles.configurationFile);
+            if (!configFile.exists()) {
+                System.out.println("Configuration file does not exist");
+                if (configFile.createNewFile()) {
+                    System.out.println("New Configuration File Created");
+                }
+            }
+
+            Gson gson = new Gson();
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(configurationFiles.configurationFile));
+            Configuration configuration = gson.fromJson(bufferedReader, Configuration.class);
+            bufferedReader.close();
+            return configuration;
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            System.out.println("An error occurred while reading the configuration file");
+            return null;
+        }
     }
-//        return null;
-//    }
 
     public void setConfigurationFile() {
         //Check weather the file is there are not if there pre-assign values to valriables so we can update one record
         Scanner scanner = new Scanner(System.in);
-        Configuration configuration = new Configuration();
         HandleFiles writeFiles = new HandleFiles();
         Validation validation = new Validation();
+        Configuration configuration = readGson();
 
-        getConfigurationFile("So Configuration File Found \nCreating New Configuration File");
-        // if file is exist it updates the values if not create a new file
+        if (configuration == null) {
+            //since Read Gson Return Null if file not found havve to create new config file
+            System.out.println("No existing configuration found. Creating a new configuration.");
+            configuration = new Configuration();
+        }
         boolean loop = true;
         while (loop) {
             System.out.println("1. Change Max Ticket pool capacity ");
@@ -99,6 +113,7 @@ public class ConfigurationService {
 
     public void getConfigurationFile(String message) {
         //put this where Starting TODO
+
         Configuration configuration = new Configuration();
         File configFile = new File(configurationFiles.configurationFile);
         if (!configFile.exists()) {
@@ -106,36 +121,26 @@ public class ConfigurationService {
             //can use with a custom message
             System.out.println("\n");
         } else {
-            try {
-                //PreSetting Values from Files
-                configuration.setTicketReleaseRate(readGson().getTicketReleaseRate());
-                configuration.setMaxTicketCapacity(readGson().getMaxTicketCapacity());
-                configuration.setTotalTickets(readGson().getTotalTickets());
-                configuration.setCustomerRetrievalRate(readGson().getCustomerRetrievalRate());
+            //setting Values From the File
+            configuration.setTicketReleaseRate(readGson().getTicketReleaseRate());
+            configuration.setMaxTicketCapacity(readGson().getMaxTicketCapacity());
+            configuration.setTotalTickets(readGson().getTotalTickets());
+            configuration.setCustomerRetrievalRate(readGson().getCustomerRetrievalRate());
 
 
-            } catch (IOException ioExceptione) {
-                System.out.println("An error occurred while reading the configuration file");
-                ioExceptione.printStackTrace();
-            }
         }
     }
 
     public void printConfigFile(Configuration configuration) {
-        try {
-            System.out.println("\n");
-            System.out.println("Total Tickets : " + readGson().getTotalTickets());
-            System.out.println("Customer Retrieval rate : " + configuration.getCustomerRetrievalRate());
-            System.out.println("Max TicketPool Capacity : " + configuration.getMaxTicketCapacity());
-            System.out.println("Ticket Relase rate : " + configuration.getTicketReleaseRate());
-            System.out.println("\n");
+        System.out.println("\n");
+        System.out.println("Total Tickets : " + readGson().getTotalTickets());
+        System.out.println("Customer Retrieval rate : " + configuration.getCustomerRetrievalRate());
+        System.out.println("Max TicketPool Capacity : " + configuration.getMaxTicketCapacity());
+        System.out.println("Ticket Relase rate : " + configuration.getTicketReleaseRate());
+        System.out.println("\n");
 
-        } catch (IOException ioExceptione) {
-            System.out.println("An error occurred while printing the configuration file");
-            ioExceptione.printStackTrace();
-        }
-        ;
     }
-
 }
+
+
 
