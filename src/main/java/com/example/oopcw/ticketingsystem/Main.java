@@ -26,10 +26,9 @@ public class Main {
             switch (input.nextLine().toLowerCase()) {
                 case "1":
                     System.out.println("Starting The Simulation");
-                    configurationService.getConfigurationFile("No File Found, Creating a New Configuration File"); //
+                    configurationService.getConfigurationFile(); //
                     break;
                 case "2":
-                    System.out.println("Change Values configurations come here");
                     configurationService.setConfigurationFile();
                     break;
                 case "3":

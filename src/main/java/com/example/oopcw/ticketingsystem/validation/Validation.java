@@ -9,9 +9,6 @@ public class Validation {
         int value;
         while (true) {
             System.out.println(prompt);
-
-            //prompt user gives
-
             try {
                 value = Integer.parseInt(input.nextLine());
 
@@ -26,6 +23,20 @@ public class Validation {
         }
 
 
+    }
+
+    public boolean validateTicketAmountforPool(int totalTickets, int maxTicketCapacity) {
+        if (maxTicketCapacity == 0) {
+            System.out.println("Add Max Ticket Capacity and then Add Total Tickets");
+            System.out.println();
+            return true;
+        } else if (totalTickets > maxTicketCapacity) {
+            System.out.println("Total Tickets exceeds max Capacity");
+            System.out.println("Please input a Lesser Value than " + maxTicketCapacity);
+            return false;
+        }
+
+        return true;
     }
 
 }

@@ -1,21 +1,25 @@
 package com.example.oopcw.ticketingsystem;
 
-import com.example.oopcw.ticketingsystem.service.ConfigurationService;
 
-import java.io.IOException;
+import java.io.Serial;
+import java.io.Serializable;
 
+public class Configuration implements Serializable {
 
-public class Configuration {
-    private int totalTickets;
-    private int customerRetrievalRate;
-    private int maxTicketCapacity;
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    private int totalTickets;//Number of tickets released at once
+    private int maxTicketCapacity;//max a pool can hold at a moment
     private int ticketReleaseRate;
+    private int customerRetrievalRate;
+
 
     public Configuration() {
+
     }
 
     public static void main(String[] args) {
-        Configuration config = new Configuration();
 
     }
 

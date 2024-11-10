@@ -9,12 +9,7 @@ public class HandleFiles {
 
     public void writeOnGson(Configuration configuration) {
         ConfigurationService configurationService = new ConfigurationService();
-        try {
-            configurationService.writeGson(configuration);
-        } catch (IOException e) {
-            System.out.println("Unexpected issue occurred while writing to the Gson file ");
-            e.printStackTrace();
-        }
+        configurationService.writeGson(configuration);
     }
 
 //    public Integer readOnGson() {
