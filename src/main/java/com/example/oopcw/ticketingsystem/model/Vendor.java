@@ -93,7 +93,6 @@ public class Vendor implements Runnable {
                 //      TODO logging the Amount of ticket added amount
                 try {
 
-                    Thread.sleep(frequency * 1000L);
 
                     int releasableTicketToTicketPool = ticketpool.ticketPoolCapacityCheck(releasableTickets);
                     ArrayList<Ticket> ticketsToPool = new ArrayList<>();
@@ -108,11 +107,14 @@ public class Vendor implements Runnable {
                         if (releasingTickets.get(i).getStatus() == TicketStatus.PENDING) {
                             releasingTickets.get(i).setStatus(TicketStatus.OnPOOL);
                             ticketsToPool.add(0, releasingTickets.get(i));
+
                         }
 
                     }
 
                     ticketpool.addTicket(this, ticketsToPool);
+                    Thread.sleep(frequency * 1000L);
+
                 } catch (InterruptedException e) {
                     System.out.println("Ticket release interrupted for Vendor: " + vendorId);
                     Thread.currentThread().interrupt();

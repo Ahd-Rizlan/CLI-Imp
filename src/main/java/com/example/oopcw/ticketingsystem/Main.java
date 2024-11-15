@@ -18,7 +18,7 @@ public class Main {
     public void minTemplate() {
         Scanner input = new Scanner(System.in);
         ConfigurationService configurationService = new ConfigurationService();
-        Configuration configuration = new Configuration();
+        Configuration configuration = configurationService.readGson();
         Ticketpool ticketpool = new Ticketpool(configuration);
 
         System.out.println("Welcome to the Ticketing Simulation System\n");
@@ -31,14 +31,14 @@ public class Main {
             switch (input.nextLine().toLowerCase()) {
                 case "1":
                     System.out.println("Starting The Simulation");
-                    configurationService.getConfigurationFile(); //
+
                     break;
                 case "2":
                     configurationService.setConfigurationFile();
                     break;
                 case "3":
                     System.out.println("Starting the System here");
-                    Vendor vendor = new Vendor(100, 10, ticketpool, configuration);
+                    Vendor vendor = new Vendor(50, 5, ticketpool, configuration);
                     Vendor vendor2 = new Vendor(200, 10, ticketpool, configuration);
                     Thread thread = new Thread(vendor);
                     Thread thread2 = new Thread(vendor2);

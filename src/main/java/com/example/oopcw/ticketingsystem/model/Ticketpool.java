@@ -27,7 +27,7 @@ public class Ticketpool {
     public synchronized int availabeTotalTicketCapacityCheck(Vendor vendor) {
         int availableCapacity = maxCapacity - currentPoolSize;
         int vendorTotalTickets = vendor.getTotalTicketsToRelease();
-        if (!(vendorTotalTickets > availableCapacity)) {
+        if ((vendorTotalTickets > availableCapacity)) {
             return availableCapacity;
         }
         return vendorTotalTickets;
@@ -50,6 +50,7 @@ public class Ticketpool {
         //TODO update total ticket
         tickets.addAll(ticketPool);
         System.out.println(vendor.getVendorId());
+        System.out.println(vendor.getVendorId() + "Added " + tickets.size() + " tickets");
         //TODO LOGG AS TICKET ADDED
 
     }
