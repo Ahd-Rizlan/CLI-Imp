@@ -1,10 +1,17 @@
 package com.example.oopcw.ticketingsystem.validation;
 
-public class AutoIdGeneration {
-    
-    public String generateAutoId(int increamantalValue, String Prefix) {
-        increamantalValue = increamantalValue + 1;
-        return Prefix + increamantalValue;
+import java.util.concurrent.atomic.AtomicInteger;
 
+public class AutoIdGeneration {
+
+    private static AtomicInteger incrementalValue = new AtomicInteger(0); // Atomic Integer for thread-safe increments
+
+    // Constructor (initializing value, but it's not really necessary since we start from 0)
+
+
+    // Generates a unique ID with the specified prefix
+    public String generateAutoId(String prefix) {
+        int id = incrementalValue.incrementAndGet(); // Atomically increment the value
+        return prefix + id;
     }
 }

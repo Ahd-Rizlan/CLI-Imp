@@ -8,18 +8,16 @@ import java.util.List;
 
 public class Ticketpool {
 
-
-    private static int currentPoolSize = 0;
+    private static int currentPoolSize;
     private final List<Ticket> ticketPool;
+    private final int maxCapacity;
     private final int poolSize;
-    //private final List<Ticket> poolTickets;
-    Configuration configuration;
-    private ArrayList<Ticket> soldTickets;
 
-    public Ticketpool() {
-        this.ticketPool = Collections.synchronizedList(new ArrayList<>(configuration.getMaxTicketCapacity()));
-        // this.poolTickets = Collections.synchronizedList(new ArrayList<>(configuration.getTotalTickets()));
+    public Ticketpool(Configuration configuration) {
+        maxCapacity = configuration.getTotalTickets();
         poolSize = configuration.getTotalTickets();
+        this.ticketPool = Collections.synchronizedList(new ArrayList<>(configuration.getMaxTicketCapacity()));
+
     }
 
     public synchronized void addTicketToTotalCapacity(int releasableTicketAmount) {
@@ -27,7 +25,7 @@ public class Ticketpool {
     }
 
     public synchronized int availabeTotalTicketCapacityCheck(Vendor vendor) {
-        int availableCapacity = poolSize - currentPoolSize;
+        int availableCapacity = maxCapacity - currentPoolSize;
         int vendorTotalTickets = vendor.getTotalTicketsToRelease();
         if (!(vendorTotalTickets > availableCapacity)) {
             return availableCapacity;
@@ -38,7 +36,7 @@ public class Ticketpool {
     // to check ticket pool Capacity
 
     public synchronized int ticketPoolCapacityCheck(int ticketRealeaseAmount) {
-        int availableCapacity = configuration.getMaxTicketCapacity() - ticketPool.size();
+        int availableCapacity = poolSize - ticketPool.size();
         if (availableCapacity < ticketRealeaseAmount) {
             System.out.println("Maximum available pool capacity: " + availableCapacity);
             //TODO log above
@@ -62,7 +60,7 @@ public class Ticketpool {
 //    }
 
     public int getTotalPoolCapacity() {
-        return configuration.getTotalTickets();
+        return poolSize;
     }
 
     public int getTicketPoolSize() {
@@ -70,7 +68,8 @@ public class Ticketpool {
     }
 
     public int getTicketPoolCapacity() {
-        return configuration.getMaxTicketCapacity();
+        return maxCapacity;
     }
 
 }
+

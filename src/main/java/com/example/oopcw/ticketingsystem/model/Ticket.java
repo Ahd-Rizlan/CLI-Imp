@@ -4,17 +4,18 @@ import com.example.oopcw.ticketingsystem.constant.TicketStatus;
 import com.example.oopcw.ticketingsystem.validation.AutoIdGeneration;
 
 public class Ticket {
-    private static int ticketIdCounter = 00;
-    AutoIdGeneration autoIdGeneration;
+    private static final AutoIdGeneration ticketAutoIdGeneration = new AutoIdGeneration();
+
     private String ticketId;
     private TicketStatus status;
 
     public Ticket() {
-        this.ticketId = autoIdGeneration.generateAutoId(ticketIdCounter, "Tid");
+        this.ticketId = ticketAutoIdGeneration.generateAutoId("TId");
+
     }
 
     public Ticket(Vendor Vendor) {
-        this.ticketId = autoIdGeneration.generateAutoId(ticketIdCounter, Vendor.getVendorId() + "Tid");
+        this.ticketId = ticketAutoIdGeneration.generateAutoId("TId");
     }
 
     public String getTicketId() {
@@ -34,3 +35,5 @@ public class Ticket {
         this.status = status;
     }
 }
+
+

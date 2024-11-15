@@ -4,8 +4,8 @@ import com.example.oopcw.ticketingsystem.validation.AutoIdGeneration;
 
 public class Customer implements Runnable {
 
-    private static int customerIdCounter = 0;
-    AutoIdGeneration autoIdGeneration;
+    private static final AutoIdGeneration customerAutoIdGeneration = new AutoIdGeneration();
+
     private String customerId;
     private boolean isVip;
     private int frequency;
@@ -14,7 +14,7 @@ public class Customer implements Runnable {
 
 
     public Customer(String customerId, int frequency, boolean isVip, int retrievalInterval) {
-        this.customerId = autoIdGeneration.generateAutoId(customerIdCounter, "CusId");
+        this.customerId = customerAutoIdGeneration.generateAutoId("CId");
         this.frequency = frequency;
         this.isVip = isVip;
         this.retrievalInterval = retrievalInterval;

@@ -7,20 +7,19 @@ import com.example.oopcw.ticketingsystem.validation.AutoIdGeneration;
 import java.util.ArrayList;
 
 public class Vendor implements Runnable {
-
-    private static int vendorIdCounter = 00;
-    private final int totalTicketsToRelease;
+    private static final AutoIdGeneration vendorAutoIdGeneration = new AutoIdGeneration();
     private final int frequency;
+    private final int totalTicketsToRelease;
     Configuration config;
     Ticket ticket;
-    AutoIdGeneration autoIdGeneration;
     Ticketpool ticketpool;
     private String vendorId;
     private int ticketsPerRelease;
     private ArrayList<Ticket> releasingTickets;
 
+
     public Vendor(int totalTicketsToRelease, int ticketsPerRelease) {
-        this.vendorId = autoIdGeneration.generateAutoId(vendorIdCounter, "VenId");
+        this.vendorId = vendorAutoIdGeneration.generateAutoId("VId");
         this.frequency = config.getTicketReleaseRate();
         this.ticketsPerRelease = ticketsPerRelease;
         this.totalTicketsToRelease = totalTicketsToRelease;
@@ -124,3 +123,4 @@ public class Vendor implements Runnable {
 
     }
 }
+
