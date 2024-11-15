@@ -8,14 +8,14 @@ import java.util.ArrayList;
 
 public class Vendor implements Runnable {
     private static final AutoIdGeneration vendorAutoIdGeneration = new AutoIdGeneration();
+    private final String vendorId;
     private final int frequency;
     private final int totalTicketsToRelease;
+    private final ArrayList<Ticket> releasingTickets;
     Configuration config;
     Ticket ticket;
     Ticketpool ticketpool;
-    private String vendorId;
     private int ticketsPerRelease;
-    private ArrayList<Ticket> releasingTickets;
 
 
     public Vendor(int totalTicketsToRelease, int ticketsPerRelease) {
