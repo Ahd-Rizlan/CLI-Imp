@@ -19,13 +19,13 @@ public class Vendor implements Runnable {
     private int ticketsPerRelease;
     private ArrayList<Ticket> releasingTickets;
 
-    public Vendor(int totalTicketsToRelease, int ticketsPerRelease, Ticket ticket) {
+    public Vendor(int totalTicketsToRelease, int ticketsPerRelease) {
         this.vendorId = autoIdGeneration.generateAutoId(vendorIdCounter, "VenId");
         this.frequency = config.getTicketReleaseRate();
         this.ticketsPerRelease = ticketsPerRelease;
         this.totalTicketsToRelease = totalTicketsToRelease;
         this.releasingTickets = new ArrayList<>();
-        this.ticket = ticket;
+
     }
 
     public String getVendorId() {
@@ -56,49 +56,71 @@ public class Vendor implements Runnable {
     public void run() {
         if (ticketsPerRelease == 0) {
             System.out.println("No Tickets to Release");
-            return;
+            Thread.currentThread().interrupt();
+            System.out.println("Exiting the Vendor Thread");
+            //if no ticket found , closing the Thread
         } else {
 
-            int releasableTickets = ticketpool.availabeCapacityCheck(this);
-            //amount of space available to complete totalpoolSize
+            int releasableTickets = ticketpool.availabeTotalTicketCapacityCheck(this);
+
             if (releasableTickets == 0) {
                 System.out.println("No Tickets to Release since Maximum Ticket Capacity Reached");
-                return;
             }
+
             if (releasableTickets != totalTicketsToRelease && releasableTickets != 0) {
                 //TODO LOG AMOUNT OF TICKETS RELEASED
                 System.out.println("Only " + releasableTickets + " Tickets Released since Maximum Ticket Capacity Reached");
             }
+            //add releasable tickets to TotalTickets
+            ticketpool.addTicketToTotalCapacity(releasableTickets);
+
+            for (int i = 0; i < ticketsPerRelease; i++) {
+                ticket = new Ticket(Vendor.this);
+                //set status to ticket-onPool
+                ticket.setStatus(TicketStatus.PENDING);
+                releasingTickets.add(0, ticket);
+                //cehck availablity
+//                    availability yes share
+                //Adding Tickets to Customer array
+            }
+
             do {
-                releasableTickets = releasableTickets - ticketsPerRelease;
                 if (releasableTickets < ticketsPerRelease) {
                     ticketsPerRelease = releasableTickets;
                 }
+                releasableTickets = releasableTickets - ticketsPerRelease;
 
-                for (int i = 0; i < ticketsPerRelease; i++) {
-                    ticket = new Ticket(Vendor.this);
-                    ticket.setStatus(TicketStatus.OnPOOL);
-                    releasingTickets.add(0, ticket);
-                    //Adding Tickets to Customer array
-                }
                 //      TODO logging the Amount of ticket added amount
+                try {
 
+                    Thread.sleep(frequency * 1000L);
+
+                    int releasableTicketToTicketPool = ticketpool.ticketPoolCapacityCheck(releasableTickets);
+                    ArrayList<Ticket> ticketsToPool = new ArrayList<>();
+
+                    if (releasableTicketToTicketPool >= ticketsPerRelease) {
+                        releasableTicketToTicketPool = ticketsPerRelease;
+                        //eventhogh pool have more capacity we have to add maximum of tickets per release
+                        // if less we have to add maximum possible vale
+                    }
+                    //Add Tickets to temporary list while updating the status the ticket in main list
+                    for (int i = 0; i < releasableTicketToTicketPool; i++) {
+                        if (releasingTickets.get(i).getStatus() == TicketStatus.PENDING) {
+                            releasingTickets.get(i).setStatus(TicketStatus.OnPOOL);
+                            ticketsToPool.add(0, releasingTickets.get(i));
+                        }
+
+                    }
+
+                    ticketpool.addTicket(this, ticketsToPool);
+                } catch (InterruptedException e) {
+                    System.out.println("Ticket release interrupted for Vendor: " + vendorId);
+                    Thread.currentThread().interrupt();
+                    break;
+                }
             } while (releasableTickets > 0);
 
-            //geting the gap, so I can add only ticket that need to fill the gap
-//        int availableCapcity = (ticketpool.getTotalPoolCapacity() - ticketpool.getTotalPoolSize());
-//        if (totalTicketsToRelease <= availableCapcity) {
-//            //Add the AMount that coming from the Equation
-//            //Add Tickets
-//            for (int i = 0; i < totalTicketsToRelease; i++) {
-//                ticket = new Ticket(Vendor.this);
-//                //Add Tickets
-            //       }
-
-            //     }
-
         }
-
 
     }
 }

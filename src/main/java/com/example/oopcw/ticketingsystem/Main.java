@@ -1,5 +1,6 @@
 package com.example.oopcw.ticketingsystem;
 
+import com.example.oopcw.ticketingsystem.model.Vendor;
 import com.example.oopcw.ticketingsystem.service.ConfigurationService;
 
 import java.util.Scanner;
@@ -33,6 +34,12 @@ public class Main {
                     break;
                 case "3":
                     System.out.println("Starting the System here");
+                    Vendor vendor = new Vendor(100, 10);
+                    Vendor vendor2 = new Vendor(200, 10);
+                    Thread thread = new Thread(vendor);
+                    Thread thread2 = new Thread(vendor2);
+                    thread.start();
+                    thread2.start();
                     break;
                 case "4":
             }
