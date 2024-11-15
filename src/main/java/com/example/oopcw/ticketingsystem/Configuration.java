@@ -19,9 +19,6 @@ public class Configuration implements Serializable {
 
     }
 
-    public static void main(String[] args) {
-
-    }
 
     public int getTotalTickets() {
         return totalTickets;
