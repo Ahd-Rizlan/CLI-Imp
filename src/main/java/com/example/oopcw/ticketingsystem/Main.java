@@ -1,5 +1,6 @@
 package com.example.oopcw.ticketingsystem;
 
+import com.example.oopcw.ticketingsystem.model.Ticketpool;
 import com.example.oopcw.ticketingsystem.model.Vendor;
 import com.example.oopcw.ticketingsystem.service.ConfigurationService;
 
@@ -17,6 +18,9 @@ public class Main {
     public void minTemplate() {
         Scanner input = new Scanner(System.in);
         ConfigurationService configurationService = new ConfigurationService();
+        Configuration configuration = new Configuration();
+        Ticketpool ticketpool = new Ticketpool(configuration);
+
         System.out.println("Welcome to the Ticketing Simulation System\n");
         while (true) {
             System.out.println("Please enter your choice");
@@ -34,8 +38,8 @@ public class Main {
                     break;
                 case "3":
                     System.out.println("Starting the System here");
-                    Vendor vendor = new Vendor(100, 10);
-                    Vendor vendor2 = new Vendor(200, 10);
+                    Vendor vendor = new Vendor(100, 10, ticketpool, configuration);
+                    Vendor vendor2 = new Vendor(200, 10, ticketpool, configuration);
                     Thread thread = new Thread(vendor);
                     Thread thread2 = new Thread(vendor2);
                     thread.start();

@@ -7,23 +7,23 @@ import com.example.oopcw.ticketingsystem.validation.AutoIdGeneration;
 import java.util.ArrayList;
 
 public class Vendor implements Runnable {
+
     private static final AutoIdGeneration vendorAutoIdGeneration = new AutoIdGeneration();
     private final String vendorId;
     private final int frequency;
     private final int totalTicketsToRelease;
     private final ArrayList<Ticket> releasingTickets;
-    Configuration config;
-    Ticket ticket;
-    Ticketpool ticketpool;
+    private final Ticketpool ticketpool;
     private int ticketsPerRelease;
 
 
-    public Vendor(int totalTicketsToRelease, int ticketsPerRelease) {
+    public Vendor(int totalTicketsToRelease, int ticketsPerRelease, Ticketpool ticketpool, Configuration config) {
         this.vendorId = vendorAutoIdGeneration.generateAutoId("VId");
         this.frequency = config.getTicketReleaseRate();
         this.ticketsPerRelease = ticketsPerRelease;
         this.totalTicketsToRelease = totalTicketsToRelease;
         this.releasingTickets = new ArrayList<>();
+        this.ticketpool = ticketpool;
 
     }
 
@@ -53,6 +53,7 @@ public class Vendor implements Runnable {
 
     @Override
     public void run() {
+
         if (ticketsPerRelease == 0) {
             System.out.println("No Tickets to Release");
             Thread.currentThread().interrupt();
@@ -74,7 +75,7 @@ public class Vendor implements Runnable {
             ticketpool.addTicketToTotalCapacity(releasableTickets);
 
             for (int i = 0; i < ticketsPerRelease; i++) {
-                ticket = new Ticket(Vendor.this);
+                Ticket ticket = new Ticket(Vendor.this);
                 //set status to ticket-onPool
                 ticket.setStatus(TicketStatus.PENDING);
                 releasingTickets.add(0, ticket);
