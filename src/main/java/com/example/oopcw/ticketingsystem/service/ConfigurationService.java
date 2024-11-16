@@ -37,6 +37,7 @@ public class ConfigurationService {
                 System.out.println("Configuration file does not exist");
                 if (configFile.createNewFile()) {
                     System.out.println("New Configuration File Created");
+                    setConfigurationFile();
                 }
                 return new Configuration();
             }
@@ -59,7 +60,7 @@ public class ConfigurationService {
         HandleFiles writeFiles = new HandleFiles();
         Validation validation = new Validation();
         //set old Values
-        Configuration configuration = readGson();
+        Configuration configuration = new Configuration();
 
         boolean loop = true;
         while (loop) {

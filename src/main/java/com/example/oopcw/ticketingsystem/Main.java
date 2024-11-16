@@ -19,7 +19,6 @@ public class Main {
         Scanner input = new Scanner(System.in);
         ConfigurationService configurationService = new ConfigurationService();
         Configuration configuration = configurationService.readGson();
-        Ticketpool ticketpool = new Ticketpool(configuration);
 
         System.out.println("Welcome to the Ticketing Simulation System\n");
         while (true) {
@@ -31,12 +30,7 @@ public class Main {
             switch (input.nextLine().toLowerCase()) {
                 case "1":
                     System.out.println("Starting The Simulation");
-
-                    break;
-                case "2":
-                    configurationService.setConfigurationFile();
-                    break;
-                case "3":
+                    Ticketpool ticketpool = new Ticketpool(configuration);
                     System.out.println("Starting the System here");
                     Vendor vendor = new Vendor(50, 5, ticketpool, configuration);
                     Vendor vendor2 = new Vendor(200, 10, ticketpool, configuration);
@@ -44,6 +38,13 @@ public class Main {
                     Thread thread2 = new Thread(vendor2);
                     thread.start();
                     thread2.start();
+
+                    break;
+                case "2":
+                    configurationService.setConfigurationFile();
+                    break;
+                case "3":
+
                     break;
                 case "4":
             }

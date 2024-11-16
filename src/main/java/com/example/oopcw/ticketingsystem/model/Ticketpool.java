@@ -15,19 +15,25 @@ public class Ticketpool {
 
     public Ticketpool(Configuration configuration) {
         maxCapacity = configuration.getTotalTickets();
-        poolSize = configuration.getTotalTickets();
+        poolSize = configuration.getMaxTicketCapacity();
         this.ticketPool = Collections.synchronizedList(new ArrayList<>(configuration.getMaxTicketCapacity()));
 
     }
 
     public synchronized void addTicketToTotalCapacity(int releasableTicketAmount) {
         currentPoolSize = currentPoolSize + releasableTicketAmount;
+        if (currentPoolSize == maxCapacity) {
+            System.out.println("Pool is full");
+        } else {
+            System.out.println("Total Tickets Released : " + currentPoolSize);
+        }
+        //TODO LOGGING
     }
 
     public synchronized int availabeTotalTicketCapacityCheck(Vendor vendor) {
-        int availableCapacity = maxCapacity - currentPoolSize;
+        int availableCapacity = getTicketPoolCapacity() - currentPoolSize;
         int vendorTotalTickets = vendor.getTotalTicketsToRelease();
-        if ((vendorTotalTickets > availableCapacity)) {
+        if (vendorTotalTickets > availableCapacity) {
             return availableCapacity;
         }
         return vendorTotalTickets;
@@ -35,30 +41,21 @@ public class Ticketpool {
 
     // to check ticket pool Capacity
 
-    public synchronized int ticketPoolCapacityCheck(int ticketRealeaseAmount) {
-        int availableCapacity = poolSize - ticketPool.size();
-        if (availableCapacity < ticketRealeaseAmount) {
-            System.out.println("Maximum available pool capacity: " + availableCapacity);
-            //TODO log above
-            return availableCapacity;
-        }
-        return ticketRealeaseAmount;
+    public synchronized int ticketPoolCapacityCheck() {
+        int availableCapacity = getTotalPoolCapacity() - getTicketPoolSize();
+        return availableCapacity;
 
     }
 
     public synchronized void addTicket(Vendor vendor, ArrayList<Ticket> tickets) {
         //TODO update total ticket
-        tickets.addAll(ticketPool);
+        ticketPool.addAll(tickets);
         System.out.println(vendor.getVendorId());
-        System.out.println(vendor.getVendorId() + "Added " + tickets.size() + " tickets");
+        System.out.println(vendor.getVendorId() + "Added " + tickets.size() + " tickets" + "TicketPool Size :" + ticketPool.size());
         //TODO LOGG AS TICKET ADDED
 
     }
 
-
-//    public int getTotalPoolSize() {
-//        return poolTickets.size();
-//    }
 
     public int getTotalPoolCapacity() {
         return poolSize;
