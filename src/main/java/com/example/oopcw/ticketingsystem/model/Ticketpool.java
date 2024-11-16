@@ -10,19 +10,19 @@ public class Ticketpool {
 
     private static int currentPoolSize;
     private final List<Ticket> ticketPool;
+    private final int totalTickets;
     private final int maxCapacity;
-    private final int poolSize;
 
     public Ticketpool(Configuration configuration) {
-        maxCapacity = configuration.getTotalTickets();
-        poolSize = configuration.getMaxTicketCapacity();
+        totalTickets = configuration.getTotalTickets();
+        maxCapacity = configuration.getMaxTicketCapacity();
         this.ticketPool = Collections.synchronizedList(new ArrayList<>(configuration.getMaxTicketCapacity()));
 
     }
 
     public synchronized void addTicketToTotalCapacity(int releasableTicketAmount) {
         currentPoolSize = currentPoolSize + releasableTicketAmount;
-        if (currentPoolSize == maxCapacity) {
+        if (currentPoolSize == totalTickets) {
             System.out.println("Pool is full");
         } else {
             System.out.println("Total Tickets Released : " + currentPoolSize);
@@ -58,7 +58,7 @@ public class Ticketpool {
 
 
     public int getTotalPoolCapacity() {
-        return poolSize;
+        return maxCapacity;
     }
 
     public int getTicketPoolSize() {
@@ -66,7 +66,7 @@ public class Ticketpool {
     }
 
     public int getTicketPoolCapacity() {
-        return maxCapacity;
+        return totalTickets;
     }
 
 }
