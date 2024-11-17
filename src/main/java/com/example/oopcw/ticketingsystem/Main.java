@@ -12,11 +12,11 @@ public class Main {
 
     public static void main(String[] args) {
         Main main = new Main();
-        main.minTemplate();
+        main.mainTemplate();
     }
 
 
-    public void minTemplate() {
+    public void mainTemplate() {
         Scanner input = new Scanner(System.in);
         ConfigurationService configurationService = new ConfigurationService();
         Configuration configuration = configurationService.readGson();
@@ -32,28 +32,8 @@ public class Main {
                 case "1":
                     System.out.println("Starting The Simulation");
                     System.out.println("Starting the System here");
-
-                    Vendor vendor = new Vendor(100, 5, ticketpool, configuration);
-                    Vendor vendor2 = new Vendor(50, 10, ticketpool, configuration);
-                    Customer customer = new Customer(false, 50, ticketpool, configuration);
-                    System.out.println(customer.getCustomerId());
-                    Customer customer2 = new Customer(false, 50, ticketpool, configuration);
-                    System.out.println(customer2.getCustomerId());
-                    Thread thread = new Thread(vendor);
-                    Thread thread2 = new Thread(vendor2);
-                    Thread thread3 = new Thread(customer);
-                    Thread thread4 = new Thread(customer2);
-                    thread.start();
-                    thread2.start();
-//                    try {
-//                        Thread.sleep(2000);
-//                    } catch (InterruptedException e) {
-//                        throw new RuntimeException(e);
-//                    }
-                    thread3.start();
-                    thread4.start();
-
-                    break;
+                    simulation(ticketpool, configuration);
+                    mainTemplate();
                 case "2":
                     configurationService.setConfigurationFile();
                     break;
@@ -63,5 +43,27 @@ public class Main {
                 case "4":
             }
         }
+    }
+
+    public void simulation(Ticketpool ticketpool, Configuration configuration) {
+
+        Thread vendor1 = new Thread();
+        Thread vendor2 = new Thread(new Vendor(200, 100, ticketpool, configuration));
+        Thread vendor3 = new Thread(new Vendor(100, 50, ticketpool, configuration));
+        Thread vendor4 = new Thread(new Vendor(50, 20, ticketpool, configuration));
+        Thread customer = new Thread(new Customer(true, 100, ticketpool, configuration));
+        Thread customer1 = new Thread(new Customer(false, 50, ticketpool, configuration));
+        Thread customer2 = new Thread(new Customer(false, 20, ticketpool, configuration));
+        Thread customer3 = new Thread(new Customer(false, 10, ticketpool, configuration));
+
+        vendor1.start();
+        vendor2.start();
+        vendor3.start();
+        vendor4.start();
+
+        customer1.start();
+        customer2.start();
+        customer3.start();
+        
     }
 }

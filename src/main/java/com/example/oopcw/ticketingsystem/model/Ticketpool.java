@@ -8,11 +8,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class Ticketpool {
-    //TODO close all when show completion
     private static int currentPoolSize;
     private final List<Ticket> ticketPool;
     private final int totalTickets;
     private final int maxCapacity;
+    private int PoolSize;
 
     public Ticketpool(Configuration configuration) {
         totalTickets = configuration.getTotalTickets();
@@ -21,26 +21,48 @@ public class Ticketpool {
 
     }
 
-    public synchronized void addTicketToTotalCapacity(int releasableTicketAmount) {
-        currentPoolSize = currentPoolSize + releasableTicketAmount;
-        if (currentPoolSize == totalTickets) {
-//            System.out.println("Pool is full");
+
+    public synchronized int checkVendorEligibility(Vendor vendor) {
+        int availableCapacity = getTicketPoolCapacity() - getPoolSize();
+        //currentPoolSize ==  no change only increase
+        int vendorTotalTickets = vendor.getTotalTicketsToRelease();
+        if (availableCapacity == 0) {
+            //TODO LOG ABOUT CONDITION
+            Thread.currentThread().interrupt();
+            if (Thread.interrupted()) {
+                System.out.println("Maximum Event Ticket Capacity Reached");
+                System.out.println("Vendor : " + vendor.getVendorId() + " is Removed");
+            }
+        } else {
+            if (vendorTotalTickets >= availableCapacity) {
+                //TODO LOG AVAILABILTY
+                System.out.println("availableCapacity  " + availableCapacity);
+                return availableCapacity;
+            }
+            System.out.println("vendorTotalTickets" + vendorTotalTickets);
+            return vendorTotalTickets;
+        }
+        return vendorTotalTickets;
+        //TODO LOG AVAILABILTY
+
+
+    }
+
+//----------------------------------
+
+    public synchronized void updatePoolSize(int releasableTicketAmount) {
+        PoolSize = PoolSize + releasableTicketAmount;
+        if (PoolSize == totalTickets) {
+            //   System.out.println("Maximum Event Ticket Capacity Reached");
         }
         //TODO LOGGING
     }
 
-    public synchronized int availabeTotalTicketCapacityCheck(Vendor vendor) {
-        int availableCapacity = getTicketPoolCapacity() - currentPoolSize;
-        int vendorTotalTickets = vendor.getTotalTicketsToRelease();
-        if (vendorTotalTickets > availableCapacity) {
-            return availableCapacity;
-        }
-        return vendorTotalTickets;
-    }
+//----------------------------------
 
     // to check ticket pool Capacity
     public synchronized int ticketPoolCapacityCheck() {
-        int availableCapacity = getTotalPoolCapacity() - getTicketPoolSize();
+        int availableCapacity = getMaxPoolCapacity() - getTicketPoolSize();
         return availableCapacity;
 
     }
@@ -48,17 +70,16 @@ public class Ticketpool {
     public synchronized void addTicket(Vendor vendor, ArrayList<Ticket> tickets) {
         //TODO update total ticket'
         if (ticketPool.size() == maxCapacity) {
-            System.out.println("Ticket pool is Full");
+            System.out.println("TicketPool - " + "Maximum Pool Capacity Reached");
             try {
                 wait();
+                //TODO
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-
-
         }
         ticketPool.addAll(tickets);
-        System.out.println(vendor.getVendorId() + " : " + "Added " + tickets.size() + " tickets" + "TicketPool Size :" + ticketPool.size());
+        System.out.println("Vendor" + " : " + vendor.getVendorId() + " Added " + tickets.size() + " tickets : " + "Updated TicketPool Size :" + ticketPool.size());
         notifyAll();
         //TODO LOGG AS TICKET ADDED
 
@@ -81,12 +102,12 @@ public class Ticketpool {
 
 
     public synchronized void removeTicketToTotalCapacity(int purchasedTicketAmount) {
-        if (currentPoolSize == 0) {
+        if (PoolSize == 0) {
             System.out.println("Reservation Full");
             //TODO LOGGING
             Thread.currentThread().interrupt();
         } else {
-            currentPoolSize = currentPoolSize - purchasedTicketAmount;
+            PoolSize = PoolSize - purchasedTicketAmount;
             //TODO LOGGING
         }
     }
@@ -109,7 +130,7 @@ public class Ticketpool {
 
     }
 
-    public int getTotalPoolCapacity() {
+    public int getMaxPoolCapacity() {
         return maxCapacity;
     }
 
@@ -121,8 +142,8 @@ public class Ticketpool {
         return totalTickets;
     }
 
-    public int getCurrentPoolSize() {
-        return currentPoolSize;
+    public int getPoolSize() {
+        return PoolSize;
     }
 }
 

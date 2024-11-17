@@ -81,7 +81,7 @@ public class Customer implements Runnable {
                 if (isActive) {
                     Thread.sleep(retrievalInterval * 1000L);
                 }
-                int availableTickets = ticketpool.getCurrentPoolSize();
+                int availableTickets = ticketpool.getPoolSize();
                 //get Current Pool Size
 
                 if (purchaseTickets(availableTickets)) {
