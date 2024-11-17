@@ -1,6 +1,7 @@
 package com.example.oopcw.ticketingsystem.model;
 
 import com.example.oopcw.ticketingsystem.Configuration;
+import com.example.oopcw.ticketingsystem.Main;
 import com.example.oopcw.ticketingsystem.constant.TicketStatus;
 
 import java.util.ArrayList;
@@ -9,10 +10,10 @@ import java.util.List;
 
 public class Ticketpool {
     private static int currentPoolSize;
+    private static int PoolSize;
     private final List<Ticket> ticketPool;
     private final int totalTickets;
     private final int maxCapacity;
-    private int PoolSize;
 
     public Ticketpool(Configuration configuration) {
         totalTickets = configuration.getTotalTickets();
@@ -23,9 +24,22 @@ public class Ticketpool {
 
 
     public synchronized int checkVendorEligibility(Vendor vendor) {
-        int availableCapacity = getTicketPoolCapacity() - getPoolSize();
-        //currentPoolSize ==  no change only increase
+
+        int availableCapacity = this.getTicketPoolCapacity() - this.getPoolSize();
         int vendorTotalTickets = vendor.getTotalTicketsToRelease();
+
+
+        ////Test Records
+        //        System.out.println("--------------------------------------------");
+//        System.out.println("getTicketPoolCapacity " + getTicketPoolCapacity());
+//        System.out.println("availableCapacity " + availableCapacity);
+//        System.out.println("vendorTotalTickets " + vendorTotalTickets);
+//        System.out.println(Math.min(vendorTotalTickets, availableCapacity));
+
+//        System.out.println("--------------------------------------------");
+
+
+        //currentPoolSize ==  no change only increase
         if (availableCapacity == 0) {
             //TODO LOG ABOUT CONDITION
             Thread.currentThread().interrupt();
@@ -33,56 +47,55 @@ public class Ticketpool {
                 System.out.println("Maximum Event Ticket Capacity Reached");
                 System.out.println("Vendor : " + vendor.getVendorId() + " is Removed");
             }
-        } else {
-            if (vendorTotalTickets >= availableCapacity) {
-                //TODO LOG AVAILABILTY
-                System.out.println("availableCapacity  " + availableCapacity);
-                return availableCapacity;
-            }
-            System.out.println("vendorTotalTickets" + vendorTotalTickets);
-            return vendorTotalTickets;
         }
-        return vendorTotalTickets;
         //TODO LOG AVAILABILTY
-
-
+        System.out.println(Math.min(vendorTotalTickets, availableCapacity));
+        return Math.min(vendorTotalTickets, availableCapacity);
     }
 
 //----------------------------------
 
     public synchronized void updatePoolSize(int releasableTicketAmount) {
-        PoolSize = PoolSize + releasableTicketAmount;
-        if (PoolSize == totalTickets) {
-            //   System.out.println("Maximum Event Ticket Capacity Reached");
-        }
-        //TODO LOGGING
+        synchronized (ticketPool) {
+
+            PoolSize = PoolSize + releasableTicketAmount;
+            if (PoolSize == totalTickets) {
+
+                //   System.out.println("Maximum Event Ticket Capacity Reached");
+            }
+        }        //TODO LOGGING
     }
 
 //----------------------------------
 
     // to check ticket pool Capacity
     public synchronized int ticketPoolCapacityCheck() {
-        int availableCapacity = getMaxPoolCapacity() - getTicketPoolSize();
-        return availableCapacity;
+        synchronized (ticketPool) {
 
+            int availableCapacity = getMaxPoolCapacity() - getTicketPoolSize();
+            return availableCapacity;
+        }
     }
 
     public synchronized void addTicket(Vendor vendor, ArrayList<Ticket> tickets) {
         //TODO update total ticket'
-        if (ticketPool.size() == maxCapacity) {
-            System.out.println("TicketPool - " + "Maximum Pool Capacity Reached");
-            try {
-                wait();
-                //TODO
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        ticketPool.addAll(tickets);
-        System.out.println("Vendor" + " : " + vendor.getVendorId() + " Added " + tickets.size() + " tickets : " + "Updated TicketPool Size :" + ticketPool.size());
-        notifyAll();
-        //TODO LOGG AS TICKET ADDED
+        synchronized (ticketPool) {
 
+            if (ticketPool.size() == maxCapacity) {
+                System.out.println("TicketPool - " + "Maximum Pool Capacity Reached");
+                try {
+                    wait();
+                    //TODO
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            ticketPool.addAll(tickets);
+            System.out.println("Vendor" + " : " + vendor.getVendorId() + " Added " + tickets.size() + " tickets : " + "Updated TicketPool Size :" + ticketPool.size());
+            notifyAll();
+            //TODO LOGG AS TICKET ADDED
+
+        }
     }
 
     private ArrayList changeTicetStatusToSold(int tickerCount, ArrayList<Ticket> soldTickets) {

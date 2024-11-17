@@ -82,36 +82,44 @@ public class Vendor implements Runnable {
     private boolean releasableTicketsToMainPool() {
         int releasableTicketCapacity;
         releasableTicketCapacity = ticketpool.checkVendorEligibility(this);
-
         if (releasableTicketCapacity == 0) {
+            Thread.currentThread().interrupt();
+            if (Thread.interrupted()) {
+                System.out.println("Maximum Event Ticket Capacity Reached");
+                System.out.println("Vendor : " + this.getVendorId() + " is Removed");
+            }
             return false;
+        } else {
+            //TODO LOG AMOUNT OF TICKETS RELEASED
+            System.out.println("Vendor : " + getVendorId() + " - " + " " + releasableTicketCapacity + " Tickets were Released since Maximum Ticket Capacity Reached");
+            //Creating Released Tickets and add it to the Main List
+            for (int i = 0; i < releasableTicketCapacity; i++) {
+                Ticket ticket = new Ticket(Vendor.this);
+                ticket.setStatus(TicketStatus.PENDING);
+                releasingTickets.add(ticket);
+            }
+            ticketpool.updatePoolSize(releasableTicketCapacity);
+            return true;
+            //TODO LOG
         }
-        //TODO LOG AMOUNT OF TICKETS RELEASED
-        System.out.println("Vendor : " + getVendorId() + " - " + " " + releasableTicketCapacity + " Tickets were Released since Maximum Ticket Capacity Reached");
-        //Creating Released Tickets and add it to the Main List
-        for (int i = 0; i < releasableTicketCapacity; i++) {
-            Ticket ticket = new Ticket(Vendor.this);
-            ticket.setStatus(TicketStatus.PENDING);
-            releasingTickets.add(ticket);
-        }
-        ticketpool.updatePoolSize(releasableTicketCapacity);
-        return true;
-        //TODO LOG
-
     }
 
     @Override
     public void run() {
         Thread.currentThread().setName(getVendorId());
         Thread.currentThread().setPriority(Config.HighPriority);
+
+
         boolean IsActive = releasableTicketsToMainPool();
+
         //check weather the vendor have any tickets to release ; if not remove the Vendor
         while (IsActive) {
             try {
                 int capacityOfTicketPool;
-                ArrayList<Ticket> ticketsForRelease = new ArrayList<>();
                 capacityOfTicketPool = ticketpool.ticketPoolCapacityCheck();
+                ArrayList<Ticket> ticketsForRelease = new ArrayList<>();
                 addToTempListFromVendorList(Math.min(getUnReleasingTickets(), Math.min(totalTicketsToRelease, capacityOfTicketPool)), ticketsForRelease);
+
                 ticketpool.addTicket(this, ticketsForRelease);
                 IsActive = getVendorStatus();
 
