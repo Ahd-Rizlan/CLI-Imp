@@ -1,6 +1,7 @@
 package com.example.oopcw.ticketingsystem.model;
 
 import com.example.oopcw.ticketingsystem.Configuration;
+import com.example.oopcw.ticketingsystem.constant.Config;
 import com.example.oopcw.ticketingsystem.constant.TicketStatus;
 import com.example.oopcw.ticketingsystem.validation.AutoIdGeneration;
 
@@ -9,13 +10,13 @@ import java.util.ArrayList;
 public class Vendor implements Runnable {
 
     private static final AutoIdGeneration vendorAutoIdGeneration = new AutoIdGeneration();
+    private final Ticketpool ticketpool;
+    private final ArrayList<Ticket> releasingTickets;
+
     private final String vendorId;
     private final int frequency;
     private final int totalTicketsToRelease;
-    private final ArrayList<Ticket> releasingTickets;
-    private final Ticketpool ticketpool;
     private int ticketsPerRelease;
-    private boolean IsActive = true;
 
 
     public Vendor(int totalTicketsToRelease, int ticketsPerRelease, Ticketpool ticketpool, Configuration config) {
@@ -120,7 +121,13 @@ public class Vendor implements Runnable {
 
     @Override
     public void run() {
+        boolean IsActive = true;
+        Thread.currentThread().setName(getVendorId());
+        //defalut setting customer more priority
+        Thread.currentThread().setPriority(Config.HighPriority);
+
         releasableTicketsToMainPool();
+        //check weather the cvendor have any tickets to release ; if not remove the Vendor
         do {
             try {
                 int capacityOfTicketPool;
@@ -130,9 +137,10 @@ public class Vendor implements Runnable {
                     //available TicketCapacity (FreeSpace on Pool)
                     if (capacityOfTicketPool == 0) {
                         System.out.println("Ticket pool is Full");
-                        ticketpool.wait();
+                        Thread.currentThread().wait();
 
                     }
+
                 }
 
                 if ((getUnReleasingTickets() >= ticketsPerRelease)) {
@@ -158,8 +166,9 @@ public class Vendor implements Runnable {
 
             } catch (InterruptedException e) {
                 System.out.println("Ticket release interrupted for Vendor: " + vendorId);
-                IsActive = false;
                 Thread.currentThread().interrupt();
+                break;
+
             }
         } while (IsActive);
 

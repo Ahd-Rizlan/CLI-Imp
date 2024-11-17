@@ -1,7 +1,7 @@
 package com.example.oopcw.ticketingsystem.service;
 
 import com.example.oopcw.ticketingsystem.validation.Validation;
-import com.example.oopcw.ticketingsystem.constant.configurationFiles;
+import com.example.oopcw.ticketingsystem.constant.Config;
 
 import com.example.oopcw.ticketingsystem.Configuration;
 import com.example.oopcw.ticketingsystem.validation.HandleFiles;
@@ -17,7 +17,7 @@ public class ConfigurationService {
         try {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             // Gson gson = builder.create();
-            File file = new File(configurationFiles.configurationFile);
+            File file = new File(Config.configurationFile);
             Writer writer = new FileWriter(file);
             gson.toJson(configuration, writer);
             //LOG DATA ADDED TODO
@@ -32,7 +32,7 @@ public class ConfigurationService {
 
     public Configuration readGson() {
         try {
-            File configFile = new File(configurationFiles.configurationFile);
+            File configFile = new File(Config.configurationFile);
             if (!configFile.exists()) {
                 System.out.println("Configuration file does not exist");
                 if (configFile.createNewFile()) {
@@ -43,7 +43,7 @@ public class ConfigurationService {
             }
 
             Gson gson = new Gson();
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(configurationFiles.configurationFile));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(Config.configurationFile));
             Configuration configuration = gson.fromJson(bufferedReader, Configuration.class);
             bufferedReader.close();
             return configuration;
@@ -126,7 +126,7 @@ public class ConfigurationService {
     public void getConfigurationFile() {
         //put this where Starting TODO
 
-        File configFile = new File(configurationFiles.configurationFile);
+        File configFile = new File(Config.configurationFile);
         if (!configFile.exists()) {
             //can use with a custom message
             System.out.println("\n");
