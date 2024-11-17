@@ -110,19 +110,15 @@ public class Vendor implements Runnable {
                 capacityOfTicketPool = ticketpool.ticketPoolCapacityCheck();
                 ArrayList<Ticket> ticketsForRelease = new ArrayList<>();
 
-                if (ticketsPerRelease <= getUnReleasingTickets()) {
-
+                if ((getUnReleasingTickets() >= ticketsPerRelease)) {
+                    if (ticketsPerRelease > capacityOfTicketPool) {
+                        addToTempListFromVendorList(capacityOfTicketPool, ticketsForRelease);
+                    } else {
+                        addToTempListFromVendorList(ticketsPerRelease, ticketsForRelease);
+                    }
+                } else {
+                    addToTempListFromVendorList(getUnReleasingTickets(), ticketsForRelease);
                 }
-                System.out.println("--------------------------------------");
-                System.out.println("getUnReleasingTickets " + getUnReleasingTickets());
-                System.out.println("ticketsPerRelease " + ticketsPerRelease);
-                System.out.println("capacityOfTicketPool " + capacityOfTicketPool);
-                System.out.println("Min Amount " + Math.min(getUnReleasingTickets(), Math.min(totalTicketsToRelease, capacityOfTicketPool)));
-                System.out.println("(ticketpool.getMaxPoolCapacity() - capacityOfTicketPool) - " + (ticketpool.getMaxPoolCapacity() - capacityOfTicketPool));
-                System.out.println("Max Min :" + Math.min(getUnReleasingTickets(), Math.min(totalTicketsToRelease, (ticketpool.getMaxPoolCapacity() - capacityOfTicketPool))));
-                System.out.println("-----------------------------------------");
-
-                addToTempListFromVendorList(Math.min(getUnReleasingTickets(), Math.min(totalTicketsToRelease, (ticketpool.getMaxPoolCapacity() - capacityOfTicketPool))), ticketsForRelease);
 
                 ticketpool.addTicket(this, ticketsForRelease);
                 IsActive = getVendorStatus();

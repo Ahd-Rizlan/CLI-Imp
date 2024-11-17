@@ -70,12 +70,13 @@ public class Ticketpool {
 
     // to check ticket pool Capacity
     public synchronized int ticketPoolCapacityCheck() {
-        return getMaxPoolCapacity() - 30;
+        return getMaxPoolCapacity() - getTicketPoolSize();
 
     }
 
     public synchronized void addTicket(Vendor vendor, ArrayList<Ticket> tickets) {
-        //TODO update total ticket
+        //TODO update total ticket'
+
         if (ticketPool.size() == maxCapacity) {
             System.out.println("TicketPool - " + "Maximum Pool Capacity Reached");
             try {
@@ -84,14 +85,13 @@ public class Ticketpool {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+        } else {
+            ticketPool.addAll(tickets);
+            System.out.println("Vendor" + " : " + vendor.getVendorId() + " Added " + tickets.size() + " tickets : " + "Updated TicketPool Size :" + ticketPool.size());
+            notifyAll();
+            //TODO LOGG AS TICKET ADDED
         }
-        ticketPool.addAll(tickets);
-        System.out.println("Vendor" + " : " + vendor.getVendorId() + " Added " + tickets.size() + " tickets : " + "Updated TicketPool Size :" + ticketPool.size());
-        notifyAll();
-        //TODO LOGG AS TICKET ADDED
-
     }
-
 
     private ArrayList changeTicetStatusToSold(int tickerCount, ArrayList<Ticket> soldTickets) {
         int ChangedTickets = tickerCount;

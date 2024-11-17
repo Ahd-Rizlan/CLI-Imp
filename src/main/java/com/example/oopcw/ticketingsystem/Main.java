@@ -49,24 +49,27 @@ public class Main {
         Thread vendor2 = new Thread(new Vendor(200, 100, ticketpool, configuration));
         Thread vendor3 = new Thread(new Vendor(100, 50, ticketpool, configuration));
         Thread vendor4 = new Thread(new Vendor(50, 20, ticketpool, configuration));
-        Thread customer = new Thread(new Customer(true, 100, ticketpool, configuration));
+        Thread customer = new Thread(new Customer(true, 50, ticketpool, configuration));
+        Thread customer2 = new Thread(new Customer(true, 100, ticketpool, configuration));
 
         // Start vendors in sequence with a slight delay or control if needed
         vendor2.start();
         vendor3.start();
-        vendor4.start();
+//        vendor3.start();
+//        vendor4.start();
 
         // Start customers
         customer.start();
+        customer2.start();
 
-        try {
-            vendor2.join();
-            vendor3.join();
-            vendor4.join();
-            customer.join();
-        } catch (InterruptedException e) {
-            System.err.println("Thread interrupted: " + e.getMessage());
-        }
+//        try {
+//            vendor2.join();
+//            vendor3.join();
+//            vendor4.join();
+//            customer.join();
+//        } catch (InterruptedException e) {
+//            System.err.println("Thread interrupted: " + e.getMessage());
+//        }
 
         System.out.println("Final Ticket Count: " + ticketpool.getPoolSize());
     }
