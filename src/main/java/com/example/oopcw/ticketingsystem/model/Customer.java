@@ -1,7 +1,6 @@
 package com.example.oopcw.ticketingsystem.model;
 
 import com.example.oopcw.ticketingsystem.Configuration;
-import com.example.oopcw.ticketingsystem.Main;
 import com.example.oopcw.ticketingsystem.constant.Config;
 import com.example.oopcw.ticketingsystem.validation.AutoIdGeneration;
 
@@ -9,7 +8,7 @@ import java.util.ArrayList;
 
 public class Customer implements Runnable {
 
-    private static final AutoIdGeneration customerAutoIdGeneration = new AutoIdGeneration();
+    private static final AutoIdGeneration customerAutoIdGeneration = new AutoIdGeneration(0);
     private final Ticketpool ticketpool;
     private final ArrayList<Ticket> purchasedTickets;
 
@@ -56,6 +55,7 @@ public class Customer implements Runnable {
 
     private boolean purchaseTickets(int noOfTicketsInPool) {
         if (noOfTicketsInPool >= getTicketsPerPurchase()) {
+            //TODO LOG HERE THE BOTH AMOUNTS
             return true;
         } else
             return false;
@@ -63,7 +63,7 @@ public class Customer implements Runnable {
 
     private void setPriorityForVipCustomers(boolean isVip) {
         if (this.isVip == true) {
-            Thread.currentThread().setPriority(Config.HighPriority);
+            Thread.currentThread().setPriority(Config.VipPriority);
         } else {
             Thread.currentThread().setPriority(Config.LowPriority);
         }
@@ -71,30 +71,36 @@ public class Customer implements Runnable {
 
     @Override
     public void run() {
-        boolean IsActive = true;
 
+        boolean isActive = true;
         Thread.currentThread().setName(getCustomerId());
         setPriorityForVipCustomers(this.isVip());
-        do {
+
+        while (isActive) {
             try {
-                int availableTickets;
-                synchronized (ticketpool) {
-                    availableTickets = ticketpool.getCurrentPoolSize();
-                    if (purchaseTickets(availableTickets)) {
-                        ticketpool.removeTicketToTotalCapacity(availableTickets);
-                        ticketpool.removeicket(this, purchasedTickets);
-                    } else {
-                        IsActive = false;
-                        Thread.currentThread().interrupt();
-                    }
+                if (isActive) {
+                    Thread.sleep(retrievalInterval * 1000L);
+                }
+                int availableTickets = ticketpool.getCurrentPoolSize();
+                //get Current Pool Size
+
+                if (purchaseTickets(availableTickets)) {
+                    ticketpool.removeTicketToTotalCapacity(getTicketsPerPurchase());
+                    ticketpool.removeTicket(this, purchasedTickets);
+                    System.out.println(Thread.currentThread().getName() + " : " + purchasedTickets.toString());
+//                } else {
+//                    isActive = false; // Stop if no tickets can be purchased
+//                    Thread.currentThread().interrupt();
+//                    if (Thread.interrupted()) {
+//                        System.out.println(Thread.currentThread().getName() + " : " + "Exiting the System :" + "Insufficient Tickets Available");
+//                    }
                 }
 
-                Thread.sleep(retrievalInterval * 1000L);
+
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                System.out.println(Thread.currentThread().getName() + " was interrupted. Exiting...");
+                isActive = false;
             }
-        } while (IsActive);
-
-
+        }
     }
 }

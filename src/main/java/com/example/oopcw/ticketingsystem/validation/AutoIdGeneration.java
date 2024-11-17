@@ -6,7 +6,10 @@ public class AutoIdGeneration {
 
     private static AtomicInteger incrementalValue = new AtomicInteger(0); // Atomic Integer for thread-safe increments
 
-    // Constructor (initializing value, but it's not really necessary since we start from 0)
+    // Constructor
+    public AutoIdGeneration(int startingValue) {
+        this.incrementalValue = new AtomicInteger(startingValue); // Start from 0 to achieve ID starting from 1
+    }
 
 
     // Generates a unique ID with the specified prefix

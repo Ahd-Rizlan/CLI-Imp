@@ -24,9 +24,7 @@ public class Ticketpool {
     public synchronized void addTicketToTotalCapacity(int releasableTicketAmount) {
         currentPoolSize = currentPoolSize + releasableTicketAmount;
         if (currentPoolSize == totalTickets) {
-            System.out.println("Pool is full");
-        } else {
-            System.out.println("Total Tickets Released : " + currentPoolSize);
+//            System.out.println("Pool is full");
         }
         //TODO LOGGING
     }
@@ -52,14 +50,15 @@ public class Ticketpool {
         if (ticketPool.size() == maxCapacity) {
             System.out.println("Ticket pool is Full");
             try {
-                Thread.currentThread().wait();
+                wait();
             } catch (InterruptedException e) {
-                System.out.println("Thread interrupted: " + Thread.currentThread().getName());
+                throw new RuntimeException(e);
             }
+
 
         }
         ticketPool.addAll(tickets);
-        System.out.println(vendor.getVendorId() + "Added " + tickets.size() + " tickets" + "TicketPool Size :" + ticketPool.size());
+        System.out.println(vendor.getVendorId() + " : " + "Added " + tickets.size() + " tickets" + "TicketPool Size :" + ticketPool.size());
         notifyAll();
         //TODO LOGG AS TICKET ADDED
 
@@ -82,31 +81,30 @@ public class Ticketpool {
 
 
     public synchronized void removeTicketToTotalCapacity(int purchasedTicketAmount) {
-        if (currentPoolSize == 00) {
+        if (currentPoolSize == 0) {
             System.out.println("Reservation Full");
+            //TODO LOGGING
             Thread.currentThread().interrupt();
         } else {
             currentPoolSize = currentPoolSize - purchasedTicketAmount;
-            System.out.println("Total Tickets Purchased : " + purchasedTicketAmount);
+            //TODO LOGGING
         }
-        //TODO LOGGING
     }
 
-    public synchronized void removeicket(Customer customer, ArrayList<Ticket> purchasedTickets) {
-        //TODO update total ticket
+    public synchronized void removeTicket(Customer customer, ArrayList<Ticket> purchasedTickets) {
         int requiredTickets = customer.getTicketsPerPurchase();
         if (ticketPool.size() < requiredTickets) {
             System.out.println("Please wait while tickets are being updated.");
+            //TODO Log
             notifyAll();
             try {
-                Thread.currentThread().wait();
+                wait();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
-
         purchasedTickets.addAll(changeTicetStatusToSold(requiredTickets, new ArrayList<>()));
-        System.out.println(customer.getCustomerId() + "Purchased " + purchasedTickets.size() + " tickets ;" + "TicketPool Size :" + ticketPool.size());
+        System.out.println(customer.getCustomerId() + " : " + " Purchased " + purchasedTickets.size() + " tickets ;" + "Remaining Tickets Available :" + ticketPool.size());
         //TODO LOGG AS TICKET ADDED
 
     }
