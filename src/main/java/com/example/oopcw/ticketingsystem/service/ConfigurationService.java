@@ -1,7 +1,7 @@
 package com.example.oopcw.ticketingsystem.service;
 
 import com.example.oopcw.ticketingsystem.validation.Validation;
-import com.example.oopcw.ticketingsystem.constant.configurationFiles;
+import com.example.oopcw.ticketingsystem.constant.Config;
 
 import com.example.oopcw.ticketingsystem.Configuration;
 import com.example.oopcw.ticketingsystem.validation.HandleFiles;
@@ -17,7 +17,7 @@ public class ConfigurationService {
         try {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             // Gson gson = builder.create();
-            File file = new File(configurationFiles.configurationFile);
+            File file = new File(Config.configurationFile);
             Writer writer = new FileWriter(file);
             gson.toJson(configuration, writer);
             //LOG DATA ADDED TODO
@@ -32,17 +32,18 @@ public class ConfigurationService {
 
     public Configuration readGson() {
         try {
-            File configFile = new File(configurationFiles.configurationFile);
+            File configFile = new File(Config.configurationFile);
             if (!configFile.exists()) {
                 System.out.println("Configuration file does not exist");
                 if (configFile.createNewFile()) {
                     System.out.println("New Configuration File Created");
+                    setConfigurationFile();
                 }
                 return new Configuration();
             }
 
             Gson gson = new Gson();
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(configurationFiles.configurationFile));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(Config.configurationFile));
             Configuration configuration = gson.fromJson(bufferedReader, Configuration.class);
             bufferedReader.close();
             return configuration;
@@ -59,12 +60,14 @@ public class ConfigurationService {
         HandleFiles writeFiles = new HandleFiles();
         Validation validation = new Validation();
         //set old Values
-        Configuration configuration = readGson();
+        Configuration configuration = new Configuration();
 
         boolean loop = true;
         while (loop) {
-            System.out.println("1. Change Max Ticket pool capacity ");
-            System.out.println("2. Change Total Ticket capacity for Vendors ");
+            System.out.println("1. Change Total Ticket capacity of Event : ");
+            //get the total Ticket Capacity
+            System.out.println("2. Change Max Ticket pool capacity of Pool : ");
+            //get the max ticket Capacity of pool
             System.out.println("3. Change Release rate ");
             System.out.println("4. Change Purchase rate ");
             System.out.println("5. Change all ");
@@ -72,17 +75,17 @@ public class ConfigurationService {
             System.out.println("Enter your choice :");
             switch (scanner.nextLine()) {
                 case "1":
-                    configuration.setMaxTicketCapacity(validation.getValidation(scanner, "Enter Max Ticket pool capacity :"));
+                    configuration.setTotalTickets(validation.getValidation(scanner, "Enter Total Ticket capacity for Event : "));
                     writeFiles.writeOnGson(configuration);
                     //Update only one TODO
                     break;
                 case "2":
                     int totalTickets;
                     do {
-                        totalTickets = validation.getValidation(scanner, "Enter Total Ticket capacity for Vendors : ");
-                        configuration.setTotalTickets(totalTickets);
+                        totalTickets = validation.getValidation(scanner, "Enter Maximum Pool Size : ");
+                        configuration.setMaxTicketCapacity(totalTickets);
                         writeFiles.writeOnGson(configuration);
-                    } while (!validation.validateTicketAmountforPool(totalTickets, configuration.getMaxTicketCapacity()));
+                    } while (!validation.validateTicketAmountforPool(totalTickets, configuration.getTotalTickets()));
                     break;
                 case "3":
                     configuration.setTicketReleaseRate(validation.getValidation(scanner, "Enter The Release rate : "));
@@ -93,8 +96,15 @@ public class ConfigurationService {
                     writeFiles.writeOnGson(configuration);
                     break;
                 case "5":
-                    configuration.setMaxTicketCapacity(validation.getValidation(scanner, "Enter Max Ticket pool capacity :"));
-                    configuration.setTotalTickets(validation.getValidation(scanner, "Enter Total Ticket capacity for Vendors : "));
+                    configuration.setTotalTickets(validation.getValidation(scanner, "Enter Total Ticket capacity for Event:"));
+                    // configuration.setMaxTicketCapacity(validation.getValidation(scanner, "Enter Maximum Pool Size : "));
+                    int totalTicket;
+                    do {
+                        totalTicket = validation.getValidation(scanner, "Enter Maximum Pool Size : ");
+                        configuration.setMaxTicketCapacity(totalTicket);
+                        writeFiles.writeOnGson(configuration);
+                    } while (!validation.validateTicketAmountforPool(totalTicket, configuration.getTotalTickets()));
+
                     configuration.setTicketReleaseRate(validation.getValidation(scanner, "Enter The Release rate : "));
                     configuration.setCustomerRetrievalRate(validation.getValidation(scanner, "Enter Purchase rate : "));
                     writeFiles.writeOnGson(configuration);
@@ -116,7 +126,7 @@ public class ConfigurationService {
     public void getConfigurationFile() {
         //put this where Starting TODO
 
-        File configFile = new File(configurationFiles.configurationFile);
+        File configFile = new File(Config.configurationFile);
         if (!configFile.exists()) {
             //can use with a custom message
             System.out.println("\n");
