@@ -82,23 +82,17 @@ public class Vendor implements Runnable {
     private boolean releasableTicketsToMainPool() {
         int releasableTicketCapacity;
         releasableTicketCapacity = ticketpool.checkVendorEligibility(this);
+        //check the amount of tickets can be added
         if (releasableTicketCapacity == 0) {
-            Thread.currentThread().interrupt();
-            if (Thread.interrupted()) {
-                System.out.println("Maximum Event Ticket Capacity Reached");
-                System.out.println("Vendor : " + this.getVendorId() + " is Removed");
-            }
             return false;
         } else {
             //TODO LOG AMOUNT OF TICKETS RELEASED
-            System.out.println("Vendor : " + getVendorId() + " - " + " " + releasableTicketCapacity + " Tickets were Released since Maximum Ticket Capacity Reached");
             //Creating Released Tickets and add it to the Main List
             for (int i = 0; i < releasableTicketCapacity; i++) {
                 Ticket ticket = new Ticket(Vendor.this);
                 ticket.setStatus(TicketStatus.PENDING);
                 releasingTickets.add(ticket);
             }
-            ticketpool.updatePoolSize(releasableTicketCapacity);
             return true;
             //TODO LOG
         }
@@ -109,16 +103,26 @@ public class Vendor implements Runnable {
         Thread.currentThread().setName(getVendorId());
         Thread.currentThread().setPriority(Config.HighPriority);
 
-
         boolean IsActive = releasableTicketsToMainPool();
-
-        //check weather the vendor have any tickets to release ; if not remove the Vendor
         while (IsActive) {
             try {
                 int capacityOfTicketPool;
                 capacityOfTicketPool = ticketpool.ticketPoolCapacityCheck();
                 ArrayList<Ticket> ticketsForRelease = new ArrayList<>();
-                addToTempListFromVendorList(Math.min(getUnReleasingTickets(), Math.min(totalTicketsToRelease, capacityOfTicketPool)), ticketsForRelease);
+
+                if (ticketsPerRelease <= getUnReleasingTickets()) {
+
+                }
+                System.out.println("--------------------------------------");
+                System.out.println("getUnReleasingTickets " + getUnReleasingTickets());
+                System.out.println("ticketsPerRelease " + ticketsPerRelease);
+                System.out.println("capacityOfTicketPool " + capacityOfTicketPool);
+                System.out.println("Min Amount " + Math.min(getUnReleasingTickets(), Math.min(totalTicketsToRelease, capacityOfTicketPool)));
+                System.out.println("(ticketpool.getMaxPoolCapacity() - capacityOfTicketPool) - " + (ticketpool.getMaxPoolCapacity() - capacityOfTicketPool));
+                System.out.println("Max Min :" + Math.min(getUnReleasingTickets(), Math.min(totalTicketsToRelease, (ticketpool.getMaxPoolCapacity() - capacityOfTicketPool))));
+                System.out.println("-----------------------------------------");
+
+                addToTempListFromVendorList(Math.min(getUnReleasingTickets(), Math.min(totalTicketsToRelease, (ticketpool.getMaxPoolCapacity() - capacityOfTicketPool))), ticketsForRelease);
 
                 ticketpool.addTicket(this, ticketsForRelease);
                 IsActive = getVendorStatus();
