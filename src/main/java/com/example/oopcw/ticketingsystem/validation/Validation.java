@@ -30,7 +30,7 @@ public class Validation {
         String response = input.nextLine();
         boolean value = false;
         System.out.println(prompt);
-        while (!(response.equalsIgnoreCase("YES")) || response.equalsIgnoreCase("NO") || response.equalsIgnoreCase("Y") || response.equalsIgnoreCase("N")) {
+        do {
 
             if (response.equalsIgnoreCase("YES") || response.equalsIgnoreCase("Y")) {
                 value = true;
@@ -39,7 +39,7 @@ public class Validation {
                 value = false;
             }
             System.out.println("Enter YES or NO");
-        }
+        } while (!(response.equalsIgnoreCase("YES")) || response.equalsIgnoreCase("NO") || response.equalsIgnoreCase("Y") || response.equalsIgnoreCase("N"));
 
         return value;
     }

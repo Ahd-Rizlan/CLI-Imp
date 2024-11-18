@@ -35,7 +35,7 @@ public class Main {
                     4. PlaceHolder 2
                     5. Exit
                     ----------------------------------------
-                    """);
+                    Enter your choice :  """);
             switch (input.nextLine().toLowerCase()) {
                 case "1":
                     simulation(ticketpool, configuration);
@@ -60,7 +60,7 @@ public class Main {
                     -----------------------------------------------
                     1. Configure the number of Vendors to be Added 
                     2. Configure the number of Customers to be Added 
-                    3. Save and Run 
+                    3. Save and Run Or Run With Default Settings
                     Please enter your choice :
                     ----------------------------------------------""");
 
@@ -84,7 +84,7 @@ public class Main {
     private void startThePool(ArrayList<Thread> customers, ArrayList<Thread> vendors, Ticketpool ticketpool, Configuration configuration) {
         for (Thread vendor : vendors) {
             vendor.start();
-            System.out.println(vendor.toString());
+            vendor.toString();
         }
         for (int i = 0; i < Config.DefaultContacts; i++) {
             Thread defaultVendor = new Thread(new Vendor(Config.TotalTicketsToRelease, Config.TicketsPerRelease, ticketpool, configuration));
@@ -94,7 +94,7 @@ public class Main {
 
         for (Thread customer : customers) {
             customer.start();
-            System.out.println(customer.toString());
+            customer.toString();
         }
         for (int i = 0; i < Config.DefaultContacts; i++) {
             if (i / 2 == 0) {
@@ -127,7 +127,7 @@ public class Main {
     private void createCustomers(ArrayList arrayList, Scanner input, Ticketpool ticketpool, Configuration configuration) {
 
         Validation validation = new Validation();
-        int numberOfCustomers = validation.getValidation(input, "Please enter the number of Vendors to be Added : ");
+        int numberOfCustomers = validation.getValidation(input, "Please enter the number of Customers to be Added : ");
         boolean isVIp = validation.getBoolean(input, "Customer is a Vip ((Yes/Y) or (No/N)) : ");
         int ticketsPerPurchase = validation.getValidation(input, "Enter the Tickets per Purchase : ");
         int ticketPurchaseRate = validation.getValidation(input, "Enter the Ticket Purchase Rate(seconds) : ");

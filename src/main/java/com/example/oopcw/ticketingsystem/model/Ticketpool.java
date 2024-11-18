@@ -29,14 +29,14 @@ public class Ticketpool {
         int vendorTotalTickets = vendor.getTotalTicketsToRelease();
 
 
-        //Test Records
-        System.out.println("--------------------------------------------");
-        System.out.println("getTicketPoolCapacity " + getTicketPoolCapacity());
-        System.out.println("availableCapacity " + availableCapacity);
-        System.out.println("vendorTotalTickets " + vendorTotalTickets);
-        System.out.println(Math.min(vendorTotalTickets, availableCapacity));
-
-        System.out.println("--------------------------------------------");
+//        //Test Records
+//        System.out.println("--------------------------------------------");
+//        System.out.println("getTicketPoolCapacity " + getTicketPoolCapacity());
+//        System.out.println("availableCapacity " + availableCapacity);
+//        System.out.println("vendorTotalTickets " + vendorTotalTickets);
+//        System.out.println(Math.min(vendorTotalTickets, availableCapacity));
+//
+//        System.out.println("--------------------------------------------");
 
 
         //currentPoolSize ==  no change only increase
@@ -95,26 +95,15 @@ public class Ticketpool {
     }
 
     private synchronized ArrayList<Ticket> changeTicketStatusToSold(int tickerCount, ArrayList<Ticket> soldTickets) {
-        System.out.println("Before Ticket Capacity = " + ticketPool.size());
-        System.out.println("Before Current Pool Size = " + currentPoolSize);
-
-        int RizCount = 0;
         synchronized (ticketPool) {
             for (int i = ticketPool.size() - 1; i >= 0 && tickerCount > 0; i--) {
                 if (ticketPool.get(i).getStatus() == TicketStatus.OnPOOL) {
                     ticketPool.get(i).setStatus(TicketStatus.ACCQUIRED);
                     soldTickets.add(ticketPool.get(i));
                     ticketPool.remove(i); // Safe to remove when iterating backward
-                    RizCount++;
                     tickerCount--; // Decrement tickets to process
                 }
             }
-            System.out.println("RizCount " + RizCount);
-            System.out.println("Ingathn " + ticketPool.size());
-            System.out.println("Before Ticket Capacity = " + ticketPool.size());
-            System.out.println("Solds Ticket Count = " + soldTickets.size());
-            System.out.println("After Ticket Capacity = " + ticketPool.size());
-            System.out.println("RizCount = " + RizCount);
             return soldTickets;
         }
 
@@ -123,11 +112,9 @@ public class Ticketpool {
 
 
     public synchronized void removeTicketToTotalCapacity(int purchasedTicketAmount) {
-        System.out.println("Current Pool Cpacity on Removal ticket Capacity = " + currentPoolSize);
         if (currentPoolSize >= purchasedTicketAmount) {
             currentPoolSize -= purchasedTicketAmount;
         }
-        System.out.println("Current Pool Cpacity on Removal ticket Capacity  After = " + currentPoolSize);
     }
     //TODO LOGGING
 
@@ -135,7 +122,7 @@ public class Ticketpool {
     public synchronized void removeTicket(Customer customer, ArrayList<Ticket> purchasedTickets) {
         int requiredTickets = customer.getTicketsPerPurchase();
         purchasedTickets.addAll(changeTicketStatusToSold(requiredTickets, new ArrayList<>()));
-        System.out.println(customer.getCustomerId() + " : " + " Purchased " + purchasedTickets.size() + " tickets ;" + "Remaining Tickets Available :" + ticketPool.size());
+        System.out.println("Customer " + " - " + customer.getCustomerId() + " : " + " Purchased " + purchasedTickets.size() + " tickets ;" + "Remaining Tickets Available :" + ticketPool.size());
         if (ticketPool.size() < requiredTickets) {
             System.out.println("TicketPool : Please wait while tickets are being updated.");
             System.out.println("TicketPool Available Tickets : " + ticketPool.size());

@@ -51,6 +51,7 @@ public class Vendor implements Runnable {
         return releasingTickets.size();
     }
 
+    @Override
     public String toString() {
         return "Vendor{" +
                 "Id =" + vendorId +
@@ -66,8 +67,8 @@ public class Vendor implements Runnable {
             status = false;
             Thread.currentThread().interrupt();
             if (Thread.interrupted()) {
-                System.out.println(Thread.currentThread().getName() + " : " + "Total Released Tickets : " + getTotalTickets());
-                System.out.println(Thread.currentThread().getName() + " : " + "Ticket Release is Completed");
+                System.out.println("Vendor " + " - " + Thread.currentThread().getName() + " : " + "Total Released Tickets : " + getTotalTickets());
+                System.out.println("Vendor " + " - " + Thread.currentThread().getName() + " : " + "Ticket Release is Completed");
             }
 
         }

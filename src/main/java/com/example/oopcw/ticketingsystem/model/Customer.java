@@ -49,6 +49,7 @@ public class Customer implements Runnable {
         return ticketsPerPurchase;
     }
 
+    @Override
     public String toString() {
         return "Customer {" +
                 "Id =" + customerId +
@@ -57,27 +58,6 @@ public class Customer implements Runnable {
                 '}';
     }
 
-
-//    private synchronized boolean purchaseTickets(int noOfTicketsInPool) {
-//
-//        System.out.println("Available Tickets  = " + noOfTicketsInPool);
-//        System.out.println(Thread.currentThread().getName() + " Amount To be Purchased = " + getTicketsPerPurchase());
-//
-//        if (noOfTicketsInPool >= getTicketsPerPurchase()) {
-//            //TODO LOG HERE THE BOTH AMOUNTS
-//            return true;
-//        } else {
-//            System.out.println("Customer : " + customerId + " Insufficient amount of tickets");
-//            System.out.println("TickwtPool : " + ticketpool.getTicketPoolSize());
-//            notifyAll();
-//            try {
-//                wait();
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//            return false;
-//        }
-//    }
 
     private void setPriorityForVipCustomers(boolean isVip) {
         if (this.isVip == true) {
@@ -100,18 +80,18 @@ public class Customer implements Runnable {
                     Thread.sleep(retrievalInterval * 1000L);
                     synchronized (ticketpool) {
                         int availableTickets = ticketpool.getCurrentPoolSizePoolSize();
-                        System.out.println("------------------------------------------------------------------------------------------");
-                        System.out.println("Available Tickets  = " + availableTickets);
-                        System.out.println(Thread.currentThread().getName() + " Amount To be Purchased = " + getTicketsPerPurchase());
+                        // System.out.println("------------------------------------------------------------------------------------------");
+                        // System.out.println("Available Tickets  = " + availableTickets);
+                        //System.out.println(Thread.currentThread().getName() + " Amount To be Purchased = " + getTicketsPerPurchase());
 
                         if (availableTickets >= getTicketsPerPurchase()) {
                             ticketpool.removeTicketToTotalCapacity(getTicketsPerPurchase());
                             ticketpool.removeTicket(this, purchasedTickets);
-                            System.out.println("---------------------------------------------------------------------------------");
+                            //System.out.println("---------------------------------------------------------------------------------");
                             //TODO LOG HERE THE BOTH AMOUNTS
                         } else {
                             System.out.println("Customer : " + customerId + " Insufficient amount of tickets");
-                            System.out.println("TicktPool : " + ticketpool.getTicketPoolSize());
+//                            System.out.println("TicktPool : " + ticketpool.getTicketPoolSize());
                             ticketpool.wait();
                             ticketpool.notifyAll();
                         }
