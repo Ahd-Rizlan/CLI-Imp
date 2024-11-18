@@ -46,11 +46,11 @@ public class Main {
     }
 
     public void simulation(Ticketpool ticketpool, Configuration configuration) {
-        Thread vendor2 = new Thread(new Vendor(200, 100, ticketpool, configuration));
+        Thread vendor2 = new Thread(new Vendor(200, 200, ticketpool, configuration));
         Thread vendor3 = new Thread(new Vendor(100, 50, ticketpool, configuration));
         Thread vendor4 = new Thread(new Vendor(50, 20, ticketpool, configuration));
         Thread customer = new Thread(new Customer(true, 50, ticketpool, configuration));
-        Thread customer2 = new Thread(new Customer(true, 100, ticketpool, configuration));
+        Thread customer2 = new Thread(new Customer(true, 50, ticketpool, configuration));
 
         // Start vendors in sequence with a slight delay or control if needed
         vendor2.start();
@@ -71,7 +71,6 @@ public class Main {
 //            System.err.println("Thread interrupted: " + e.getMessage());
 //        }
 
-        System.out.println("Final Ticket Count: " + ticketpool.getPoolSize());
     }
 
 //

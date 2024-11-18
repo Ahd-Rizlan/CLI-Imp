@@ -27,10 +27,6 @@ public class Customer implements Runnable {
         this.isVip = isVip;
     }
 
-    public Ticketpool getTicketpool() {
-        return ticketpool;
-    }
-
     public boolean isVip() {
         return isVip;
     }
@@ -39,27 +35,31 @@ public class Customer implements Runnable {
         return customerId;
     }
 
-
-    public ArrayList<Ticket> getPurchasedTickets() {
-        return purchasedTickets;
-    }
-
-    public int getRetrievalInterval() {
-        return retrievalInterval;
-    }
-
     public int getTicketsPerPurchase() {
         return ticketsPerPurchase;
     }
 
 
-    private boolean purchaseTickets(int noOfTicketsInPool) {
-        if (noOfTicketsInPool >= getTicketsPerPurchase()) {
-            //TODO LOG HERE THE BOTH AMOUNTS
-            return true;
-        } else
-            return false;
-    }
+//    private synchronized boolean purchaseTickets(int noOfTicketsInPool) {
+//
+//        System.out.println("Available Tickets  = " + noOfTicketsInPool);
+//        System.out.println(Thread.currentThread().getName() + " Amount To be Purchased = " + getTicketsPerPurchase());
+//
+//        if (noOfTicketsInPool >= getTicketsPerPurchase()) {
+//            //TODO LOG HERE THE BOTH AMOUNTS
+//            return true;
+//        } else {
+//            System.out.println("Customer : " + customerId + " Insufficient amount of tickets");
+//            System.out.println("TickwtPool : " + ticketpool.getTicketPoolSize());
+//            notifyAll();
+//            try {
+//                wait();
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//            return false;
+//        }
+//    }
 
     private void setPriorityForVipCustomers(boolean isVip) {
         if (this.isVip == true) {
@@ -71,32 +71,34 @@ public class Customer implements Runnable {
 
     @Override
     public void run() {
-
-        boolean isActive = true;
         Thread.currentThread().setName(getCustomerId());
         setPriorityForVipCustomers(this.isVip());
+        boolean isActive = true;
+
 
         while (isActive) {
             try {
                 if (isActive) {
                     Thread.sleep(retrievalInterval * 1000L);
+                    synchronized (ticketpool) {
+                        int availableTickets = ticketpool.getCurrentPoolSizePoolSize();
+                        System.out.println("------------------------------------------------------------------------------------------");
+                        System.out.println("Available Tickets  = " + availableTickets);
+                        System.out.println(Thread.currentThread().getName() + " Amount To be Purchased = " + getTicketsPerPurchase());
+
+                        if (availableTickets >= getTicketsPerPurchase()) {
+                            ticketpool.removeTicketToTotalCapacity(getTicketsPerPurchase());
+                            ticketpool.removeTicket(this, purchasedTickets);
+                            System.out.println("---------------------------------------------------------------------------------");
+                            //TODO LOG HERE THE BOTH AMOUNTS
+                        } else {
+                            System.out.println("Customer : " + customerId + " Insufficient amount of tickets");
+                            System.out.println("TickwtPool : " + ticketpool.getTicketPoolSize());
+                            ticketpool.wait();
+                            ticketpool.notifyAll();
+                        }
+                    }
                 }
-                int availableTickets = ticketpool.getPoolSize();
-                //get Current Pool Size
-
-                if (purchaseTickets(availableTickets)) {
-                    ticketpool.removeTicketToTotalCapacity(getTicketsPerPurchase());
-                    ticketpool.removeTicket(this, purchasedTickets);
-                    System.out.println(Thread.currentThread().getName() + " : " + purchasedTickets.toString());
-//                } else {
-//                    isActive = false; // Stop if no tickets can be purchased
-//                    Thread.currentThread().interrupt();
-//                    if (Thread.interrupted()) {
-//                        System.out.println(Thread.currentThread().getName() + " : " + "Exiting the System :" + "Insufficient Tickets Available");
-//                    }
-                }
-
-
             } catch (InterruptedException e) {
                 System.out.println(Thread.currentThread().getName() + " was interrupted. Exiting...");
                 isActive = false;
