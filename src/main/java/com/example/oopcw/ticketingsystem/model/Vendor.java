@@ -29,6 +29,16 @@ public class Vendor implements Runnable {
 
     }
 
+    public Vendor(int totalTicketsToRelease, int ticketsPerRelease, int frequency, Ticketpool ticketpool, Configuration config) {
+        this.vendorId = vendorAutoIdGeneration.generateAutoId("VId");
+        this.frequency = frequency;
+        this.ticketsPerRelease = ticketsPerRelease;
+        this.totalTicketsToRelease = totalTicketsToRelease;
+        this.releasingTickets = new ArrayList<>();
+        this.ticketpool = ticketpool;
+
+    }
+
     public String getVendorId() {
         return vendorId;
     }
@@ -41,14 +51,24 @@ public class Vendor implements Runnable {
         return releasingTickets.size();
     }
 
+    @Override
+    public String toString() {
+        return "Vendor{" +
+                "Id =" + vendorId +
+                "Total Tickets To Release = " + totalTicketsToRelease +
+                "Tickets Per Release = " + ticketsPerRelease +
+                "Ticket Release Rate =" + frequency +
+                '}';
+    }
+
     public boolean getVendorStatus() {
         boolean status = true;
         if (getUnReleasingTickets() == 0) {
             status = false;
             Thread.currentThread().interrupt();
             if (Thread.interrupted()) {
-                System.out.println(Thread.currentThread().getName() + " : " + "Total Released Tickets : " + getTotalTickets());
-                System.out.println(Thread.currentThread().getName() + " : " + "Ticket Release is Completed");
+                System.out.println("Vendor " + " - " + Thread.currentThread().getName() + " : " + "Total Released Tickets : " + getTotalTickets());
+                System.out.println("Vendor " + " - " + Thread.currentThread().getName() + " : " + "Ticket Release is Completed");
             }
 
         }
@@ -140,5 +160,6 @@ public class Vendor implements Runnable {
 
 
     }
+
 }
 
