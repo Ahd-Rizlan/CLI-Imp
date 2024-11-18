@@ -1,10 +1,13 @@
 package com.example.oopcw.ticketingsystem;
 
+import com.example.oopcw.ticketingsystem.constant.Config;
 import com.example.oopcw.ticketingsystem.model.Customer;
 import com.example.oopcw.ticketingsystem.model.Ticketpool;
 import com.example.oopcw.ticketingsystem.model.Vendor;
 import com.example.oopcw.ticketingsystem.service.ConfigurationService;
+import com.example.oopcw.ticketingsystem.validation.Validation;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -21,17 +24,20 @@ public class Main {
         ConfigurationService configurationService = new ConfigurationService();
         Configuration configuration = configurationService.readGson();
         Ticketpool ticketpool = new Ticketpool(configuration);
-        System.out.println("Welcome to the Ticketing Simulation System\n");
+        System.out.println("Welcome to the Ticketing Simulation System");
         while (true) {
-            System.out.println("Please enter your choice");
-            System.out.println("1. Start System");
-            System.out.println("2. Change configuration Values");
-            System.out.println("3. Change Number of Buyers and Sellers");
-            System.out.println("3. Exit");
+            System.out.println("""
+                    ---------------------------------------
+                    Please enter your choice
+                    1. Start Simulation
+                    2. Change configuration Values 
+                    3. PlaceHolder 1
+                    4. PlaceHolder 2
+                    5. Exit
+                    ----------------------------------------
+                    """);
             switch (input.nextLine().toLowerCase()) {
                 case "1":
-                    System.out.println("Starting The Simulation");
-                    System.out.println("Starting the System here");
                     simulation(ticketpool, configuration);
                     break;
                 case "2":
@@ -46,73 +52,89 @@ public class Main {
     }
 
     public void simulation(Ticketpool ticketpool, Configuration configuration) {
-        Thread vendor2 = new Thread(new Vendor(200, 200, ticketpool, configuration));
-        Thread vendor3 = new Thread(new Vendor(100, 50, ticketpool, configuration));
-        Thread vendor4 = new Thread(new Vendor(50, 20, ticketpool, configuration));
-        Thread customer = new Thread(new Customer(true, 50, ticketpool, configuration));
-        Thread customer2 = new Thread(new Customer(true, 50, ticketpool, configuration));
+        ArrayList<Thread> customers = new ArrayList<>();
+        ArrayList<Thread> vendors = new ArrayList<>();
+        while (true) {
+            Scanner input = new Scanner(System.in);
+            System.out.println("""
+                    -----------------------------------------------
+                    1. Configure the number of Vendors to be Added 
+                    2. Configure the number of Customers to be Added 
+                    3. Save and Run 
+                    Please enter your choice :
+                    ----------------------------------------------""");
 
-        // Start vendors in sequence with a slight delay or control if needed
-        vendor2.start();
-        vendor3.start();
-//        vendor3.start();
-//        vendor4.start();
-
-        // Start customers
-        customer.start();
-        customer2.start();
-
-//        try {
-//            vendor2.join();
-//            vendor3.join();
-//            vendor4.join();
-//            customer.join();
-//        } catch (InterruptedException e) {
-//            System.err.println("Thread interrupted: " + e.getMessage());
-//        }
+            switch (input.nextLine()) {
+                case "1":
+                    createVendors(vendors, input, ticketpool, configuration);
+                    break;
+                case "2":
+                    createCustomers(customers, input, ticketpool, configuration);
+                    break;
+                case "3":
+                    startThePool(customers, vendors, ticketpool, configuration);
+                    break;
+                default:
+                    System.out.println("Invalid choice");
+            }
+        }
 
     }
 
-//
-//    public void simulation(Ticketpool ticketpool, Configuration configuration) {
-//        //  Vendor vendor2= new Vendor(200, 100, ticketpool, configuration);
-//
-//        //Thread vendor1 = new Thread();
-//        Thread vendor2 = new Thread(new Vendor(200, 100, ticketpool, configuration));
-//        Thread vendor3 = new Thread(new Vendor(100, 50, ticketpool, configuration));
-//        Thread vendor4 = new Thread(new Vendor(50, 20, ticketpool, configuration));
-//        Thread customer = new Thread(new Customer(true, 100, ticketpool, configuration));
-//        Thread customer1 = new Thread(new Customer(false, 50, ticketpool, configuration));
-//        Thread customer2 = new Thread(new Customer(false, 20, ticketpool, configuration));
-//        Thread customer3 = new Thread(new Customer(false, 10, ticketpool, configuration));
-//
-//        // vendor1.start();
-//        vendor2.start();
-//        vendor3.start();
-//        vendor4.start();
-//
-//        customer.start();
-//        customer1.start();
-//        customer2.start();
-//        customer3.start();
-//
-//        try {
-////            vendor1.join();
-//            vendor2.join();
-//            vendor3.join();
-//            vendor4.join();
-////            vendor5.join();
-//            customer1.join();
-//            customer2.join();
-//            customer3.join();
-////            customer4.join();
-////            customer5.join();
-////            customer6.join();
-//        } catch (InterruptedException e) {
-//            System.err.println("Thread interrupted: " + e.getMessage());
-//        }
-//
-//        System.out.println("Final Ticket Count: " + ticketpool.getPoolSize());
-//    }
-//
+    private void startThePool(ArrayList<Thread> customers, ArrayList<Thread> vendors, Ticketpool ticketpool, Configuration configuration) {
+        for (Thread vendor : vendors) {
+            vendor.start();
+            System.out.println(vendor.toString());
+        }
+        for (int i = 0; i < Config.DefaultContacts; i++) {
+            Thread defaultVendor = new Thread(new Vendor(Config.TotalTicketsToRelease, Config.TicketsPerRelease, ticketpool, configuration));
+            defaultVendor.start();
+        }
+
+
+        for (Thread customer : customers) {
+            customer.start();
+            System.out.println(customer.toString());
+        }
+        for (int i = 0; i < Config.DefaultContacts; i++) {
+            if (i / 2 == 0) {
+                Thread defaultCustomer = new Thread(new Customer(Config.Vip, Config.TicketsPerPurchase, ticketpool, configuration));
+                defaultCustomer.start();
+                defaultCustomer.toString();
+            } else {
+                Thread defaultCustomer = new Thread(new Customer(Config.NotVip, Config.TicketsPerPurchase, ticketpool, configuration));
+                defaultCustomer.start();
+                defaultCustomer.toString();
+            }
+        }
+
+
+    }
+
+    private void createVendors(ArrayList arrayList, Scanner input, Ticketpool ticketpool, Configuration configuration) {
+
+        Validation validation = new Validation();
+        int numberOfVendors = validation.getValidation(input, "Please enter the number of Vendors to be Added : ");
+        int totalTicketsToBeReleased = validation.getValidation(input, "Enter the Total Tickets to be Released : ");
+        int ticketsPerRelease = validation.getValidation(input, "Enter the Tickets per Release: ");
+        int ticketReleaseRate = validation.getValidation(input, "Enter the Ticket Release Rate(seconds): ");
+        for (int i = 0; i < numberOfVendors; i++) {
+            Thread vendor = new Thread(new Vendor(totalTicketsToBeReleased, ticketsPerRelease, ticketReleaseRate, ticketpool, configuration));
+            arrayList.add(vendor);
+        }
+    }
+
+    private void createCustomers(ArrayList arrayList, Scanner input, Ticketpool ticketpool, Configuration configuration) {
+
+        Validation validation = new Validation();
+        int numberOfCustomers = validation.getValidation(input, "Please enter the number of Vendors to be Added : ");
+        boolean isVIp = validation.getBoolean(input, "Customer is a Vip ((Yes/Y) or (No/N)) : ");
+        int ticketsPerPurchase = validation.getValidation(input, "Enter the Tickets per Purchase : ");
+        int ticketPurchaseRate = validation.getValidation(input, "Enter the Ticket Purchase Rate(seconds) : ");
+        for (int i = 0; i < numberOfCustomers; i++) {
+            Thread customer = new Thread(new Customer(isVIp, ticketsPerPurchase, ticketPurchaseRate, ticketpool, configuration));
+            arrayList.add(customer);
+        }
+    }
+
 }

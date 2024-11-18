@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 public class Validation {
 
+
     public int getValidation(Scanner input, String prompt) {
         int value;
         while (true) {
@@ -23,6 +24,24 @@ public class Validation {
         }
 
 
+    }
+
+    public boolean getBoolean(Scanner input, String prompt) {
+        String response = input.nextLine();
+        boolean value = false;
+        System.out.println(prompt);
+        while (!(response.equalsIgnoreCase("YES")) || response.equalsIgnoreCase("NO") || response.equalsIgnoreCase("Y") || response.equalsIgnoreCase("N")) {
+
+            if (response.equalsIgnoreCase("YES") || response.equalsIgnoreCase("Y")) {
+                value = true;
+            }
+            if (input.nextLine().equalsIgnoreCase("NO") || response.equalsIgnoreCase("N")) {
+                value = false;
+            }
+            System.out.println("Enter YES or NO");
+        }
+
+        return value;
     }
 
     public boolean validateTicketAmountforPool(int totalTickets, int maxTicketCapacity) {

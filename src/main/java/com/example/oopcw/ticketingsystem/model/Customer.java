@@ -27,6 +27,16 @@ public class Customer implements Runnable {
         this.isVip = isVip;
     }
 
+    public Customer(boolean isVip, int ticketsPerPurchase, int retrievalInterval, Ticketpool ticketPool, Configuration config) {
+        this.customerId = customerAutoIdGeneration.generateAutoId("CId");
+        this.retrievalInterval = retrievalInterval;
+        this.ticketsPerPurchase = ticketsPerPurchase;
+        this.ticketpool = ticketPool;
+        this.purchasedTickets = new ArrayList<>();
+        this.isVip = isVip;
+    }
+
+
     public boolean isVip() {
         return isVip;
     }
@@ -37,6 +47,14 @@ public class Customer implements Runnable {
 
     public int getTicketsPerPurchase() {
         return ticketsPerPurchase;
+    }
+
+    public String toString() {
+        return "Customer {" +
+                "Id =" + customerId +
+                "Tickets Per Purchase = " + ticketsPerPurchase +
+                "Ticket Purchase Rate =" + retrievalInterval +
+                '}';
     }
 
 
@@ -93,7 +111,7 @@ public class Customer implements Runnable {
                             //TODO LOG HERE THE BOTH AMOUNTS
                         } else {
                             System.out.println("Customer : " + customerId + " Insufficient amount of tickets");
-                            System.out.println("TickwtPool : " + ticketpool.getTicketPoolSize());
+                            System.out.println("TicktPool : " + ticketpool.getTicketPoolSize());
                             ticketpool.wait();
                             ticketpool.notifyAll();
                         }

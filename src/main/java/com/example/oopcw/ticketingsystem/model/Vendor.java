@@ -29,6 +29,16 @@ public class Vendor implements Runnable {
 
     }
 
+    public Vendor(int totalTicketsToRelease, int ticketsPerRelease, int frequency, Ticketpool ticketpool, Configuration config) {
+        this.vendorId = vendorAutoIdGeneration.generateAutoId("VId");
+        this.frequency = frequency;
+        this.ticketsPerRelease = ticketsPerRelease;
+        this.totalTicketsToRelease = totalTicketsToRelease;
+        this.releasingTickets = new ArrayList<>();
+        this.ticketpool = ticketpool;
+
+    }
+
     public String getVendorId() {
         return vendorId;
     }
@@ -39,6 +49,15 @@ public class Vendor implements Runnable {
 
     public int getTotalTickets() {
         return releasingTickets.size();
+    }
+
+    public String toString() {
+        return "Vendor{" +
+                "Id =" + vendorId +
+                "Total Tickets To Release = " + totalTicketsToRelease +
+                "Tickets Per Release = " + ticketsPerRelease +
+                "Ticket Release Rate =" + frequency +
+                '}';
     }
 
     public boolean getVendorStatus() {
@@ -140,5 +159,6 @@ public class Vendor implements Runnable {
 
 
     }
+
 }
 
