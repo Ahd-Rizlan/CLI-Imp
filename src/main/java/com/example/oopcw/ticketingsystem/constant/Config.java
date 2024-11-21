@@ -6,8 +6,8 @@ public class Config {
     public static final int VipPriority = 6;
     public static final int LowPriority = 5;
 
-    public static final int TotalTicketsToRelease = 100;
-    public static final int TicketsPerRelease = 50;
+    public static final int TotalTicketsToRelease = 500;
+    public static final int TicketsPerRelease = 100;
 
     public static final boolean Vip = true;
     public static final boolean NotVip = false;

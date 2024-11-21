@@ -41,6 +41,7 @@ public class Main {
                     simulation(ticketpool, configuration);
                     break;
                 case "2":
+                    
                     configurationService.setConfigurationFile();
                     break;
                 case "3":
