@@ -27,17 +27,21 @@ public class Validation {
 
     public boolean getBoolean(Scanner input, String prompt) {
         boolean value = false;
-        System.out.println(prompt);
-        while (!(input.nextLine().equalsIgnoreCase("YES")) || input.nextLine().equalsIgnoreCase("NO") || input.nextLine().equalsIgnoreCase("Y") || input.nextLine().equalsIgnoreCase("N")) {
+        String response;
 
-            if (input.nextLine().equalsIgnoreCase("YES") || input.nextLine().equalsIgnoreCase("Y")) {
+        do {
+            System.out.println(prompt);
+            response = input.nextLine();
+            if (response.equalsIgnoreCase("YES") || response.equalsIgnoreCase("Y")) {
                 value = true;
+                break;
             }
-            if (input.nextLine().equalsIgnoreCase("NO") || input.nextLine().equalsIgnoreCase("N")) {
+            if (response.equalsIgnoreCase("NO") || response.equalsIgnoreCase("N")) {
                 value = false;
+                break;
             }
             System.out.println("Enter YES or NO");
-        }
+        } while (!(response.equalsIgnoreCase("YES")) || response.equalsIgnoreCase("NO") || response.equalsIgnoreCase("Y") || response.equalsIgnoreCase("N"));
         return value;
     }
 
