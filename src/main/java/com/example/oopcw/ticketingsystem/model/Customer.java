@@ -50,6 +50,10 @@ public class Customer implements Runnable {
         return ticketsPerPurchase;
     }
 
+    public int getPurchasedTickets() {
+        return purchasedTickets.size();
+    }
+
     @Override
     public String toString() {
         return "Customer {" +
@@ -84,8 +88,13 @@ public class Customer implements Runnable {
                         // System.out.println("------------------------------------------------------------------------------------------");
                         // System.out.println("Available Tickets  = " + availableTickets);
                         //System.out.println(Thread.currentThread().getName() + " Amount To be Purchased = " + getTicketsPerPurchase());
-
-                        if (availableTickets >= getTicketsPerPurchase()) {
+                        if (availableTickets == 0) {
+                            Thread.currentThread().interrupt();
+                            if (Thread.interrupted()) {
+                                System.out.println("Exitning The Customer " + Thread.currentThread().getName() + " Total Tickets Purchased : " + this.getPurchasedTickets() + " : Tickets Sold-out");
+                                isActive = false;
+                            }
+                        } else if (availableTickets >= getTicketsPerPurchase()) {
                             ticketpool.removeTicketToTotalCapacity(getTicketsPerPurchase());
                             ticketpool.removeTicket(this, purchasedTickets);
                             //System.out.println("---------------------------------------------------------------------------------");

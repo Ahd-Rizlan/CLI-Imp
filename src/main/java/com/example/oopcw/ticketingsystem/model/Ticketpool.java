@@ -111,6 +111,12 @@ public class Ticketpool {
 
 
     public synchronized void removeTicketToTotalCapacity(int purchasedTicketAmount) {
+//        if (currentPoolSize == 0) {
+//            Thread.currentThread().interrupt();
+//            if (Thread.interrupted()) {
+//                System.out.println("Exitning The Customer " + Thread.currentThread().getName() + " : Tickets Sold-out");
+//            }
+        //}
         if (currentPoolSize >= purchasedTicketAmount) {
             currentPoolSize -= purchasedTicketAmount;
         }
@@ -121,7 +127,7 @@ public class Ticketpool {
     public synchronized void removeTicket(Customer customer, ArrayList<Ticket> purchasedTickets) {
         int requiredTickets = customer.getTicketsPerPurchase();
         purchasedTickets.addAll(changeTicketStatusToSold(requiredTickets, new ArrayList<>()));
-        System.out.println("Customer " + " - " + customer.getCustomerId() + " : " + " Purchased " + purchasedTickets.size() + " tickets ;" + "Remaining Tickets Available :" + ticketPool.size());
+        System.out.println("Customer " + " - " + customer.getCustomerId() + " : " + " Purchased " + customer.getTicketsPerPurchase() + " tickets ;" + "Remaining Tickets Available :" + ticketPool.size());
         if (ticketPool.size() < requiredTickets) {
             System.out.println("TicketPool : Please wait while tickets are being updated.");
             System.out.println("TicketPool Available Tickets : " + ticketPool.size());
