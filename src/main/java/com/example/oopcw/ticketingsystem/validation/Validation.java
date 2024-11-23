@@ -26,7 +26,7 @@ public class Validation {
     }
 
     public boolean getBoolean(Scanner input, String prompt) {
-        boolean value = false;
+//boolean value = false;
         String response;
 
         do {
