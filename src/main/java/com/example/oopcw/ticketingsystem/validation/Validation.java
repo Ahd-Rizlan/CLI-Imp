@@ -33,16 +33,16 @@ public class Validation {
             System.out.println(prompt);
             response = input.nextLine();
             if (response.equalsIgnoreCase("YES") || response.equalsIgnoreCase("Y")) {
-                value = true;
-                break;
+                return true;
+                // break;
             }
             if (response.equalsIgnoreCase("NO") || response.equalsIgnoreCase("N")) {
-                value = false;
-                break;
+                return false;
+                //  break;
             }
             System.out.println("Enter YES or NO");
         } while (!(response.equalsIgnoreCase("YES")) || response.equalsIgnoreCase("NO") || response.equalsIgnoreCase("Y") || response.equalsIgnoreCase("N"));
-        return value;
+        return true;
     }
 
     public boolean validateTicketAmountforPool(int totalTickets, int maxTicketCapacity) {
