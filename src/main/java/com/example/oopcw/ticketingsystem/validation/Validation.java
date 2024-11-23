@@ -12,7 +12,6 @@ public class Validation {
             System.out.println(prompt);
             try {
                 value = Integer.parseInt(input.nextLine());
-
                 if (value < 0) {
                     System.out.println("Please enter a positive number");
                 } else {
@@ -27,20 +26,18 @@ public class Validation {
     }
 
     public boolean getBoolean(Scanner input, String prompt) {
-        String response = input.nextLine();
         boolean value = false;
         System.out.println(prompt);
-        do {
+        while (!(input.nextLine().equalsIgnoreCase("YES")) || input.nextLine().equalsIgnoreCase("NO") || input.nextLine().equalsIgnoreCase("Y") || input.nextLine().equalsIgnoreCase("N")) {
 
-            if (response.equalsIgnoreCase("YES") || response.equalsIgnoreCase("Y")) {
+            if (input.nextLine().equalsIgnoreCase("YES") || input.nextLine().equalsIgnoreCase("Y")) {
                 value = true;
             }
-            if (input.nextLine().equalsIgnoreCase("NO") || response.equalsIgnoreCase("N")) {
+            if (input.nextLine().equalsIgnoreCase("NO") || input.nextLine().equalsIgnoreCase("N")) {
                 value = false;
             }
             System.out.println("Enter YES or NO");
-        } while (!(response.equalsIgnoreCase("YES")) || response.equalsIgnoreCase("NO") || response.equalsIgnoreCase("Y") || response.equalsIgnoreCase("N"));
-
+        }
         return value;
     }
 
