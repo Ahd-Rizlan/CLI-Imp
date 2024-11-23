@@ -1,7 +1,6 @@
 package com.example.oopcw.ticketingsystem.model;
 
 import com.example.oopcw.ticketingsystem.Configuration;
-import com.example.oopcw.ticketingsystem.Main;
 import com.example.oopcw.ticketingsystem.constant.TicketStatus;
 
 import java.util.ArrayList;

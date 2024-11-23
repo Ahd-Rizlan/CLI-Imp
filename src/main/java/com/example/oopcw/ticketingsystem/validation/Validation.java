@@ -12,7 +12,6 @@ public class Validation {
             System.out.println(prompt);
             try {
                 value = Integer.parseInt(input.nextLine());
-
                 if (value < 0) {
                     System.out.println("Please enter a positive number");
                 } else {
@@ -27,21 +26,23 @@ public class Validation {
     }
 
     public boolean getBoolean(Scanner input, String prompt) {
-        String response = input.nextLine();
-        boolean value = false;
-        System.out.println(prompt);
-        do {
+//boolean value = false;
+        String response;
 
+        do {
+            System.out.println(prompt);
+            response = input.nextLine();
             if (response.equalsIgnoreCase("YES") || response.equalsIgnoreCase("Y")) {
-                value = true;
+                return true;
+                // break;
             }
-            if (input.nextLine().equalsIgnoreCase("NO") || response.equalsIgnoreCase("N")) {
-                value = false;
+            if (response.equalsIgnoreCase("NO") || response.equalsIgnoreCase("N")) {
+                return false;
+                //  break;
             }
             System.out.println("Enter YES or NO");
         } while (!(response.equalsIgnoreCase("YES")) || response.equalsIgnoreCase("NO") || response.equalsIgnoreCase("Y") || response.equalsIgnoreCase("N"));
-
-        return value;
+        return true;
     }
 
     public boolean validateTicketAmountforPool(int totalTickets, int maxTicketCapacity) {
