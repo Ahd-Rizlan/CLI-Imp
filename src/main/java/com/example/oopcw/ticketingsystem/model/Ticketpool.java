@@ -1,7 +1,6 @@
 package com.example.oopcw.ticketingsystem.model;
 
 import com.example.oopcw.ticketingsystem.Configuration;
-import com.example.oopcw.ticketingsystem.Main;
 import com.example.oopcw.ticketingsystem.constant.TicketStatus;
 import com.example.oopcw.ticketingsystem.service.ConfigurationService;
 
@@ -17,7 +16,6 @@ public class Ticketpool {
     private int PoolSize;
 
     public Ticketpool(Configuration configuration) {
-        ConfigurationService configurationService = new ConfigurationService();
         totalTickets = configuration.getTotalTickets();
         maxCapacity = configuration.getMaxTicketCapacity();
         this.ticketPool = Collections.synchronizedList(new ArrayList<>(configuration.getMaxTicketCapacity()));
