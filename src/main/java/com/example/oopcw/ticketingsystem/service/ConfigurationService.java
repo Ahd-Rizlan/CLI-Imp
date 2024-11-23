@@ -59,67 +59,25 @@ public class ConfigurationService {
         Scanner scanner = new Scanner(System.in);
         HandleFiles writeFiles = new HandleFiles();
         Validation validation = new Validation();
-        //set old Values
         Configuration configuration = new Configuration();
 
         boolean loop = true;
         while (loop) {
-            System.out.println("1. Change Total Ticket capacity of Event : ");
-            //get the total Ticket Capacity
-            System.out.println("2. Change Max Ticket pool capacity of Pool : ");
-            //get the max ticket Capacity of pool
-            System.out.println("3. Change Release rate ");
-            System.out.println("4. Change Purchase rate ");
-            System.out.println("5. Change all ");
-            System.out.println("6. Exit");
-            System.out.println("Enter your choice :");
-            switch (scanner.nextLine()) {
-                case "1":
-                    configuration.setTotalTickets(validation.getValidation(scanner, "Enter Total Ticket capacity for Event : "));
-                    writeFiles.writeOnGson(configuration);
-                    //Update only one TODO
-                    break;
-                case "2":
-                    int totalTickets;
-                    do {
-                        totalTickets = validation.getValidation(scanner, "Enter Maximum Pool Size : ");
-                        configuration.setMaxTicketCapacity(totalTickets);
-                        writeFiles.writeOnGson(configuration);
-                    } while (!validation.validateTicketAmountforPool(totalTickets, configuration.getTotalTickets()));
-                    break;
-                case "3":
-                    configuration.setTicketReleaseRate(validation.getValidation(scanner, "Enter The Release rate : "));
-                    writeFiles.writeOnGson(configuration);
-                    break;
-                case "4":
-                    configuration.setCustomerRetrievalRate(validation.getValidation(scanner, "Enter Purchase rate : "));
-                    writeFiles.writeOnGson(configuration);
-                    break;
-                case "5":
-                    configuration.setTotalTickets(validation.getValidation(scanner, "Enter Total Ticket capacity for Event:"));
-                    // configuration.setMaxTicketCapacity(validation.getValidation(scanner, "Enter Maximum Pool Size : "));
-                    int totalTicket;
-                    do {
-                        totalTicket = validation.getValidation(scanner, "Enter Maximum Pool Size : ");
-                        configuration.setMaxTicketCapacity(totalTicket);
-                        writeFiles.writeOnGson(configuration);
-                    } while (!validation.validateTicketAmountforPool(totalTicket, configuration.getTotalTickets()));
+            System.out.println("-----------------------------------------------------------------");
+            configuration.setTotalTickets(validation.getValidation(scanner, "Enter Total Ticket capacity for Event:"));
+            // configuration.setMaxTicketCapacity(validation.getValidation(scanner, "Enter Maximum Pool Size : "));
+            int totalTicket;
+            do {
+                totalTicket = validation.getValidation(scanner, "Enter Maximum Pool Size : ");
+                configuration.setMaxTicketCapacity(totalTicket);
+                writeFiles.writeOnGson(configuration);
+            } while (!validation.validateTicketAmountforPool(totalTicket, configuration.getTotalTickets()));
 
-                    configuration.setTicketReleaseRate(validation.getValidation(scanner, "Enter The Release rate : "));
-                    configuration.setCustomerRetrievalRate(validation.getValidation(scanner, "Enter Purchase rate : "));
-                    writeFiles.writeOnGson(configuration);
-                    break;
-                case "6":
-                    System.out.println("Configuration file updated");
-                    System.out.println();
-                    loop = false;
-                    break;
-
-                default:
-                    System.out.println("Invalid option \n Enter a Valid Option \n");
-
-
-            }
+            configuration.setTicketReleaseRate(validation.getValidation(scanner, "Enter The Release rate : "));
+            configuration.setCustomerRetrievalRate(validation.getValidation(scanner, "Enter Purchase rate : "));
+            writeFiles.writeOnGson(configuration);
+            System.out.println("-----------------------------------------------------------------");
+            break;
         }
     }
 

@@ -4,6 +4,7 @@ import com.example.oopcw.ticketingsystem.Configuration;
 import com.example.oopcw.ticketingsystem.constant.Config;
 import com.example.oopcw.ticketingsystem.validation.AutoIdGeneration;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Customer implements Runnable {

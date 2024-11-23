@@ -41,7 +41,7 @@ public class Main {
                     simulation(ticketpool, configuration);
                     break;
                 case "2":
-                    
+
                     configurationService.setConfigurationFile();
                     break;
                 case "3":
@@ -62,6 +62,7 @@ public class Main {
                     1. Configure the number of Vendors to be Added 
                     2. Configure the number of Customers to be Added 
                     3. Save and Run Or Run With Default Settings
+                    4. Return to main Screen 
                     Please enter your choice :
                     ----------------------------------------------""");
 
@@ -75,6 +76,9 @@ public class Main {
                 case "3":
                     startThePool(customers, vendors, ticketpool, configuration);
                     break;
+                case "4":
+                    return;
+
                 default:
                     System.out.println("Invalid choice");
             }
