@@ -128,6 +128,12 @@ public class Ticketpool {
         int requiredTickets = customer.getTicketsPerPurchase();
         purchasedTickets.addAll(changeTicketStatusToSold(requiredTickets, new ArrayList<>()));
         System.out.println("Customer " + " - " + customer.getCustomerId() + " : " + " Purchased " + customer.getTicketsPerPurchase() + " tickets ;" + "Remaining Tickets Available :" + ticketPool.size());
+        if (ticketPool.size() == 0 && currentPoolSize == 0) {
+            Thread.currentThread().interrupt();
+            if (Thread.interrupted()) {
+                System.out.println("Tickets Are Sold Out");
+            }
+        }
         if (ticketPool.size() < requiredTickets) {
             System.out.println("TicketPool : Please wait while tickets are being updated.");
             System.out.println("TicketPool Available Tickets : " + ticketPool.size());
