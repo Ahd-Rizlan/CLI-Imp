@@ -59,10 +59,11 @@ public class Ticketpool {
 //----------------------------------
 
     // to check ticket pool Capacity
-    public synchronized int ticketPoolCapacityCheck() {
-        return getMaxPoolCapacity() - getTicketPoolSize();
+//    public synchronized int ticketPoolCapacityCheck() {
+//        return getMaxPoolCapacity() - getTicketPoolSize();
+//
+//    }
 
-    }
 
     public synchronized ArrayList<Ticket> addTicketsOnMainPool(Vendor vendor) {
         int tickerCount = (Config.TotalTicketsToRelease / Config.TotalNumberOfVendors);
@@ -74,9 +75,10 @@ public class Ticketpool {
             Ticket ticket = new Ticket(vendor);
             ticket.setStatus(TicketStatus.PENDING);
             TotalTicketsToBeReleased.add(ticket);
+            TotalTicketsToBeReleased.size();
 
         }
-
+        TotalTicketsToBeReleased.size();
         return TotalTicketsToBeReleased;
     }
 
