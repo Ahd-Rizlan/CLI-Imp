@@ -41,7 +41,6 @@ public class Main {
                     simulation(ticketpool, configuration);
                     break;
                 case "2":
-
                     configurationService.setConfigurationFile();
                     break;
                 case "3":
@@ -75,6 +74,7 @@ public class Main {
                     break;
                 case "3":
                     startThePool(customers, vendors, ticketpool, configuration);
+
                     break;
                 case "4":
                     return;
@@ -93,6 +93,7 @@ public class Main {
         }
         for (int i = 0; i < Config.DefaultContacts; i++) {
             Thread defaultVendor = new Thread(new Vendor(Config.TotalTicketsToRelease, Config.TicketsPerRelease, ticketpool, configuration));
+            Config.TotalNumberOfVendors++;
             defaultVendor.start();
         }
 
@@ -125,8 +126,10 @@ public class Main {
         int ticketsPerRelease = validation.getValidation(input, "Enter the Tickets per Release: ");
         int ticketReleaseRate = validation.getValidation(input, "Enter the Ticket Release Rate(seconds): ");
         for (int i = 0; i < numberOfVendors; i++) {
-            Thread vendor = new Thread(new Vendor(totalTicketsToBeReleased, ticketsPerRelease, ticketReleaseRate, ticketpool, configuration));
+            Config.TotalNumberOfVendors++;
+            Thread vendor = new Thread(new Vendor(ticketsPerRelease, ticketReleaseRate, ticketpool, configuration));
             arrayList.add(vendor);
+
         }
     }
 

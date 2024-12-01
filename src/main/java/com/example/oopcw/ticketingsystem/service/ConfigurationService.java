@@ -73,8 +73,8 @@ public class ConfigurationService {
                 writeFiles.writeOnGson(configuration);
             } while (!validation.validateTicketAmountforPool(totalTicket, configuration.getTotalTickets()));
 
-            configuration.setTicketReleaseRate(validation.getValidation(scanner, "Enter The Release rate : "));
-            configuration.setCustomerRetrievalRate(validation.getValidation(scanner, "Enter Purchase rate : "));
+            configuration.setTicketReleaseRate(validation.getValidation(scanner, "Enter The Release rate (seconds): "));
+            configuration.setCustomerRetrievalRate(validation.getValidation(scanner, "Enter Purchase rate (seconds): "));
             writeFiles.writeOnGson(configuration);
             System.out.println("-----------------------------------------------------------------");
             break;

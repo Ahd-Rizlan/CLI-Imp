@@ -15,4 +15,7 @@ public class Config {
 
     public static final int DefaultContacts = 3;
 
+    public static int TotalNumberOfVendors;
+
+
 }
