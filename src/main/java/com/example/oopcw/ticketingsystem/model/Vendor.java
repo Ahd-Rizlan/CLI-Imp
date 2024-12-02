@@ -89,21 +89,21 @@ public class Vendor implements Runnable {
 //        }
 //        return unReleasedTickets;
 //    }
-    private void addToTempListFromVendorList(Configuration configuration, ArrayList<Ticket> ticketsToPool) {
-        int tickerCount = (configuration.getTotalTickets() / Config.TotalNumberOfVendors);
-        int ChangedTickets = tickerCount;
-        System.out.println(vendorId);
-        for (int i = 0; i < tickerCount; i++) {
-            if (releasingTickets.get(i).getStatus() == TicketStatus.PENDING) {
-                releasingTickets.get(i).setStatus(TicketStatus.OnPOOL);
-                ticketsToPool.add(releasingTickets.get(i));
-                ChangedTickets--;
-                if (ChangedTickets == 0) {
-                    return;
-                }
-            }
-        }
-    }
+//    private void addToTempListFromVendorList(Configuration configuration, ArrayList<Ticket> ticketsToPool) {
+//        int tickerCount = (configuration.getTotalTickets() / Config.TotalNumberOfVendors);
+//        int ChangedTickets = tickerCount;
+//        System.out.println(vendorId);
+//        for (int i = 0; i < tickerCount; i++) {
+//            if (releasingTickets.get(i).getStatus() == TicketStatus.PENDING) {
+//                releasingTickets.get(i).setStatus(TicketStatus.OnPOOL);
+//                ticketsToPool.add(releasingTickets.get(i));
+//                ChangedTickets--;
+//                if (ChangedTickets == 0) {
+//                    return;
+//                }
+//            }
+//        }
+//    }
 //    private void addToTempListFromVendorList(int tickerCount, ArrayList<Ticket> ticketsToPool) {
 //        int ChangedTickets = tickerCount;
 //        for (int i = 0; i < releasingTickets.size(); i++) {
@@ -144,12 +144,12 @@ public class Vendor implements Runnable {
 
         // Release Tickets List
         int totalTicketsForRelease;
-
         //No of TOTAL TICKETS TO BE RELEASED
         totalTicketsForRelease = ticketpool.addTicketsOnMainPool(this);
         System.out.println("Vendor " + vendorId + " is Releasing " + totalTicketsForRelease + " Tickets");
         //Setting the Total Tickets to be Released
         this.setTicketsPerRelease(totalTicketsForRelease);
+
         System.out.println(getTicketsPerRelease());
         System.out.println(this.ticketsPerRelease + "-------------------------------------");
         // boolean IsActive = true;

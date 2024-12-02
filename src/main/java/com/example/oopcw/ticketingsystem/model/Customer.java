@@ -85,9 +85,9 @@ public class Customer implements Runnable {
                     Thread.sleep(retrievalInterval * 1000L);
                     synchronized (ticketpool) {
                         int availableTickets = ticketpool.getCurrentPoolSizePoolSize();
-                        // System.out.println("------------------------------------------------------------------------------------------");
-                        // System.out.println("Available Tickets  = " + availableTickets);
-                        //System.out.println(Thread.currentThread().getName() + " Amount To be Purchased = " + getTicketsPerPurchase());
+                        System.out.println("------------------------------------------------------------------------------------------");
+                        System.out.println("Available Tickets  = " + availableTickets);
+                        System.out.println(Thread.currentThread().getName() + " Amount To be Purchased = " + getTicketsPerPurchase());
                         if (availableTickets == 0) {
                             Thread.currentThread().interrupt();
                             if (Thread.interrupted()) {

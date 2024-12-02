@@ -72,12 +72,6 @@ public class Ticketpool {
         int TotalTicketsToBeReleased = tickerCount;
         System.out.println(vendor.getVendorId());
         System.out.println("Vendor Added " + tickerCount + " Tickets");
-//        for (int i = 0; i < tickerCount; i++) {
-//            Ticket ticket = new Ticket(vendor);
-//            ticket.setStatus(TicketStatus.PENDING);
-//            TotalTicketsToBeReleased.add(ticket);
-//            TotalTicketsToBeReleased.size();
-
         return TotalTicketsToBeReleased;
     }
 
@@ -131,6 +125,7 @@ public class Ticketpool {
                 tickets.add(ticket);
             }
             ticketPool.addAll(tickets);
+            currentPoolSize = currentPoolSize + TotalTicketsToBeReleased;
             System.out.println("Vendor" + " : " + vendor.getVendorId() + " Added " + tickets.size() + " tickets : " + "Updated TicketPool Size :" + ticketPool.size());
             notifyAll();
 
@@ -160,8 +155,30 @@ public class Ticketpool {
             currentPoolSize -= purchasedTicketAmount;
         }
     }
-    //TODO LOGGING
 
+    //TODO LOGGING
+    public synchronized void removeTicket2(Customer customer, ArrayList<Ticket> purchasedTickets) {
+        int requiredTickets = customer.getTicketsPerPurchase();
+        if (ticketPool.size() == 0 && currentPoolSize == 0) {
+            Thread.currentThread().interrupt();
+            if (Thread.interrupted()) {
+                System.out.println("Tickets Are Sold Out");
+            }
+        }
+        if (ticketPool.size() < customer.getTicketsPerPurchase()) {
+            System.out.println("TicketPool : Please wait while tickets are being updated.");
+            System.out.println("TicketPool Available Tickets : " + ticketPool.size());
+            //TODO Log
+            notifyAll();
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+
+    }
 
     public synchronized void removeTicket(Customer customer, ArrayList<Ticket> purchasedTickets) {
         int requiredTickets = customer.getTicketsPerPurchase();
