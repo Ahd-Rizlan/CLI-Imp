@@ -15,7 +15,7 @@ public class Vendor implements Runnable {
 
     private final String vendorId;
     private final int frequency;
-    private final int totalTicketsToRelease = 0;
+    private int totalTicketsToRelease = 0;
     private int ticketsPerRelease;
 
 
@@ -45,9 +45,12 @@ public class Vendor implements Runnable {
         return totalTicketsToRelease;
     }
 
-    public void setTotalTicketsToRelease(int totalTicketsToRelease) {
-        ticketsPerRelease = ticketsPerRelease + totalTicketsToRelease;
-        ;
+    public int getTicketsPerRelease() {
+        return ticketsPerRelease;
+    }
+
+    public void setTicketsPerRelease(int ticketsPerRelease) {
+        this.ticketsPerRelease = ticketsPerRelease;
     }
 //    public int getTotalTickets() {
 //        return releasingTickets.size();
@@ -140,29 +143,32 @@ public class Vendor implements Runnable {
         Thread.currentThread().setPriority(Config.HighPriority);
 
         // Release Tickets List
-        ArrayList<Ticket> totalTicketsForRelease;
+        int totalTicketsForRelease;
 
         //No of TOTAL TICKETS TO BE RELEASED
         totalTicketsForRelease = ticketpool.addTicketsOnMainPool(this);
-
+        System.out.println("Vendor " + vendorId + " is Releasing " + totalTicketsForRelease + " Tickets");
         //Setting the Total Tickets to be Released
-        this.setTotalTicketsToRelease(totalTicketsForRelease.size());
-
-        int availableTickets = totalTicketsForRelease.size();
-
+        this.setTicketsPerRelease(totalTicketsForRelease);
+        System.out.println(getTicketsPerRelease());
+        System.out.println(this.ticketsPerRelease + "-------------------------------------");
         // boolean IsActive = true;
-        while (availableTickets > 0) {
+        while (totalTicketsForRelease > 0) {
             try {
-                if (this.ticketsPerRelease <= availableTickets) {
-                    this.ticketsPerRelease = availableTickets;
+                if (this.ticketsPerRelease <= totalTicketsForRelease) {
+                    this.ticketsPerRelease = totalTicketsForRelease;
                 }
+                synchronized (ticketpool) {
+                    int releasableTickets = Math.min(ticketsPerRelease, (ticketpool.getMaxPoolCapacity() - ticketpool.getTicketPoolSize()));
+                    ticketpool.addTicket(this, releasableTickets);
 
 
-                System.out.println("---------------------------------------");
-                this.setTotalTicketsToRelease(totalTicketsForRelease.size());
-                System.out.println(this.getTotalTicketsToRelease());
+//                System.out.println("---------------------------------------");
+//                this.setTicketsPerRelease(totalTicketsForRelease);
+//                System.out.println(this.getTotalTicketsToRelease());
+//                System.out.println("---------------------------------------");
 
-
+                }
                 //     int capacityOfTicketPool;
                 //      capacityOfTicketPool = ticketpool.ticketPoolCapacityCheck();
 

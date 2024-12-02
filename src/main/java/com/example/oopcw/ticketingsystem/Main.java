@@ -89,7 +89,6 @@ public class Main {
     private void startThePool(ArrayList<Thread> customers, ArrayList<Thread> vendors, Ticketpool ticketpool, Configuration configuration) {
         for (Thread vendor : vendors) {
             vendor.start();
-            vendor.toString();
         }
         for (int i = 0; i < Config.DefaultContacts; i++) {
             Thread defaultVendor = new Thread(new Vendor(Config.TotalTicketsToRelease, Config.TicketsPerRelease, ticketpool, configuration));

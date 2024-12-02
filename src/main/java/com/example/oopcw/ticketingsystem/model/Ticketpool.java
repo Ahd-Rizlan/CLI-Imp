@@ -65,27 +65,57 @@ public class Ticketpool {
 //    }
 
 
-    public synchronized ArrayList<Ticket> addTicketsOnMainPool(Vendor vendor) {
+    public synchronized int addTicketsOnMainPool(Vendor vendor) {
         int tickerCount = (Config.TotalTicketsToRelease / Config.TotalNumberOfVendors);
         System.out.println("Vendor trying to add " + tickerCount);
-        ArrayList<Ticket> TotalTicketsToBeReleased = new ArrayList<>();
+        //  ArrayList<Ticket> TotalTicketsToBeReleased = new ArrayList<>();
+        int TotalTicketsToBeReleased = tickerCount;
         System.out.println(vendor.getVendorId());
         System.out.println("Vendor Added " + tickerCount + " Tickets");
-        for (int i = 0; i < tickerCount; i++) {
-            Ticket ticket = new Ticket(vendor);
-            ticket.setStatus(TicketStatus.PENDING);
-            TotalTicketsToBeReleased.add(ticket);
-            TotalTicketsToBeReleased.size();
+//        for (int i = 0; i < tickerCount; i++) {
+//            Ticket ticket = new Ticket(vendor);
+//            ticket.setStatus(TicketStatus.PENDING);
+//            TotalTicketsToBeReleased.add(ticket);
+//            TotalTicketsToBeReleased.size();
 
-        }
-        TotalTicketsToBeReleased.size();
         return TotalTicketsToBeReleased;
     }
 
+//    public synchronized int addTicketsOnMainPool(Configuration configuration) {
+//        int tickerCount = (Config.TotalTicketsToRelease / Config.TotalNumberOfVendors);
+//        System.out.println("Vendor trying to add " + tickerCount);
+//        //  ArrayList<Ticket> TotalTicketsToBeReleased = new ArrayList<>();
+//        int TotalTicketsToBeReleased = tickerCount;
+//        System.out.println(configuration.getVendorId());
+//        System.out.println("Vendor Added " + tickerCount + " Tickets");
+////        TotalTicketsToBeReleased.size();
+////        return TotalTicketsToBeReleased;
+//
+//    }
 
-    public synchronized void addTicket(Vendor vendor, ArrayList<Ticket> tickets) {
+
+//    public synchronized void addTicket(Vendor vendor, ArrayList<Ticket> tickets) {
+//        //TODO update total ticket'
+//
+//        if (ticketPool.size() == maxCapacity) {
+//            System.out.println("TicketPool - " + "Maximum Pool Capacity Reached " + ticketPool.size());
+//            try {
+//                wait();
+//                //TODO
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//        } else {
+//            ticketPool.addAll(tickets);
+//            System.out.println("Vendor" + " : " + vendor.getVendorId() + " Added " + tickets.size() + " tickets : " + "Updated TicketPool Size :" + ticketPool.size());
+//            notifyAll();
+//            //TODO LOGG AS TICKET ADDED
+//        }
+//    }
+
+    public synchronized void addTicket(Vendor vendor, int TotalTicketsToBeReleased) {
         //TODO update total ticket'
-
+        ArrayList<Ticket> tickets = new ArrayList<>();
         if (ticketPool.size() == maxCapacity) {
             System.out.println("TicketPool - " + "Maximum Pool Capacity Reached " + ticketPool.size());
             try {
@@ -95,9 +125,15 @@ public class Ticketpool {
                 throw new RuntimeException(e);
             }
         } else {
+            for (int i = 0; i < TotalTicketsToBeReleased; i++) {
+                Ticket ticket = new Ticket(vendor);
+                ticket.setStatus(TicketStatus.PENDING);
+                tickets.add(ticket);
+            }
             ticketPool.addAll(tickets);
             System.out.println("Vendor" + " : " + vendor.getVendorId() + " Added " + tickets.size() + " tickets : " + "Updated TicketPool Size :" + ticketPool.size());
             notifyAll();
+
             //TODO LOGG AS TICKET ADDED
         }
     }
