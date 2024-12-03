@@ -12,8 +12,9 @@ public class Ticketpool {
     private final List<Ticket> ticketPool;
     private final int totalTickets;
     private final int maxCapacity;
-    private int currentPoolSize;
-    private int PoolSize;
+    private int currentSizeOfLargePool;
+
+    private int LargePoolSize = Config.TotalTicketsToRelease;
 
     public Ticketpool(Configuration configuration) {
         totalTickets = configuration.getTotalTickets();
@@ -65,8 +66,20 @@ public class Ticketpool {
 //    }
 
 
+    public int getLargePoolSize() {
+        return LargePoolSize;
+    }
+
+    public void setLargePoolSize(int largePoolSize) {
+        LargePoolSize = largePoolSize;
+    }
+
     public synchronized int addTicketsOnMainPool(Vendor vendor) {
         int tickerCount = (Config.TotalTicketsToRelease / Config.TotalNumberOfVendors);
+
+        //updating the total number of tickets
+        //   currentSizeOfLargePool = currentSizeOfLargePool + tickerCount;
+
         System.out.println("Vendor trying to add " + tickerCount);
         //  ArrayList<Ticket> TotalTicketsToBeReleased = new ArrayList<>();
         int TotalTicketsToBeReleased = tickerCount;
@@ -108,6 +121,12 @@ public class Ticketpool {
 //    }
 
     public synchronized void addTicket(Vendor vendor, int TotalTicketsToBeReleased) {
+//        if (TotalTicketsToBeReleased == 0) {
+//            Thread.currentThread().interrupt();
+//            if (Thread.interrupted()) {
+//                System.out.println("Vendor " + vendor.getVendorId() + " : " + "Tickets are Sold Out--------------------------------------------------------------------------------------------------------------------------");
+//            }
+//        }
         //TODO update total ticket'
         ArrayList<Ticket> tickets = new ArrayList<>();
         if (ticketPool.size() == maxCapacity) {
@@ -123,9 +142,10 @@ public class Ticketpool {
                 Ticket ticket = new Ticket(vendor);
                 ticket.setStatus(TicketStatus.PENDING);
                 tickets.add(ticket);
+                currentSizeOfLargePool++;
             }
             ticketPool.addAll(tickets);
-            currentPoolSize = currentPoolSize + TotalTicketsToBeReleased;
+            //  currentSizeOfLargePool = currentSizeOfLargePool + TotalTicketsToBeReleased;
             System.out.println("Vendor" + " : " + vendor.getVendorId() + " Added " + tickets.size() + " tickets : " + "Updated TicketPool Size :" + ticketPool.size());
             notifyAll();
 
@@ -150,24 +170,41 @@ public class Ticketpool {
     }
 
 
-    public synchronized void removeTicketToTotalCapacity(int purchasedTicketAmount) {
-        if (currentPoolSize >= purchasedTicketAmount) {
-            currentPoolSize -= purchasedTicketAmount;
-        }
-    }
+//    public synchronized void removeTicketToTotalCapacity(int purchasedTicketAmount) {
+//        if (currentPoolSize >= purchasedTicketAmount) {
+//            currentPoolSize -= purchasedTicketAmount;
+//        }
+//    }
+
 
     //TODO LOGGING
     public synchronized void removeTicket2(Customer customer, ArrayList<Ticket> purchasedTickets) {
         int requiredTickets = customer.getTicketsPerPurchase();
-        if (ticketPool.size() == 0 && currentPoolSize == 0) {
+        if (ticketPool.isEmpty() && currentSizeOfLargePool == 0) {
             Thread.currentThread().interrupt();
             if (Thread.interrupted()) {
                 System.out.println("Tickets Are Sold Out");
             }
+
         }
+
         if (ticketPool.size() < customer.getTicketsPerPurchase()) {
+//            System.out.println("-----------------------------------------------------===  " + LargePoolSize);
+//            if (LargePoolSize < customer.getTicketsPerPurchase()) {
+//                System.out.println("Insufficient Tickets Available---------------------------------------------------------=======");
+//                System.out.println(Thread.currentThread().getName());
+//
+//                Thread.currentThread().interrupt();
+//                if (Thread.interrupted()) {
+//                    System.out.println(Thread.currentThread().getName());
+//                    System.out.println("Tickets Are Sold Out");
+//                }
+//
+//            }
+
             System.out.println("TicketPool : Please wait while tickets are being updated.");
             System.out.println("TicketPool Available Tickets : " + ticketPool.size());
+
             //TODO Log
             notifyAll();
             try {
@@ -175,34 +212,44 @@ public class Ticketpool {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+        } else {
+            // currentSizeOfLargePool = currentSizeOfLargePool - requiredTickets;
+            for (int i = 0; i < requiredTickets; i++) {
+                ticketPool.get(0).setStatus(TicketStatus.ACCQUIRED);
+                purchasedTickets.add(ticketPool.get(0));
+                ticketPool.remove(0);
+                LargePoolSize--;
+            }
+            System.out.println("Customer" + customer.getCustomerId() + " - " + " Purchased " + customer.getTicketsPerPurchase() + " tickets ;" + "Remaining Tickets Available :" + ticketPool.size());
+
         }
 
 
     }
 
-    public synchronized void removeTicket(Customer customer, ArrayList<Ticket> purchasedTickets) {
-        int requiredTickets = customer.getTicketsPerPurchase();
-        purchasedTickets.addAll(changeTicketStatusToSold(requiredTickets, new ArrayList<>()));
-        System.out.println("Customer " + " - " + customer.getCustomerId() + " : " + " Purchased " + customer.getTicketsPerPurchase() + " tickets ;" + "Remaining Tickets Available :" + ticketPool.size());
-        if (ticketPool.size() == 0 && currentPoolSize == 0) {
-            Thread.currentThread().interrupt();
-            if (Thread.interrupted()) {
-                System.out.println("Tickets Are Sold Out");
-            }
-        }
-        if (ticketPool.size() < requiredTickets) {
-            System.out.println("TicketPool : Please wait while tickets are being updated.");
-            System.out.println("TicketPool Available Tickets : " + ticketPool.size());
-            //TODO Log
-            notifyAll();
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
+    //    public synchronized void removeTicket(Customer customer, ArrayList<Ticket> purchasedTickets) {
+//        int requiredTickets = customer.getTicketsPerPurchase();
+//        purchasedTickets.addAll(changeTicketStatusToSold(requiredTickets, new ArrayList<>()));
+//        System.out.println("Customer " + " - " + customer.getCustomerId() + " : " + " Purchased " + customer.getTicketsPerPurchase() + " tickets ;" + "Remaining Tickets Available :" + ticketPool.size());
+//        if (ticketPool.size() == 0 && currentSizeOfLargePool == 0) {
+//            Thread.currentThread().interrupt();
+//            if (Thread.interrupted()) {
+//                System.out.println("Tickets Are Sold Out");
+//            }
+//        }
+//        if (ticketPool.size() < requiredTickets) {
+//            System.out.println("TicketPool : Please wait while tickets are being updated.");
+//            System.out.println("TicketPool Available Tickets : " + ticketPool.size());
+//            //TODO Log
+//            notifyAll();
+//            try {
+//                wait();
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
+//
     public int getMaxPoolCapacity() {
         return maxCapacity;
     }
@@ -215,12 +262,12 @@ public class Ticketpool {
         return totalTickets;
     }
 
-    public int getPoolSize() {
-        return PoolSize;
+    public int getCurrentSizeOfLargePool() {
+        return currentSizeOfLargePool;
     }
 
     public int getCurrentPoolSizePoolSize() {
-        return currentPoolSize;
+        return currentSizeOfLargePool;
     }
 }
 

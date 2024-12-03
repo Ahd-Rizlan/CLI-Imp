@@ -23,6 +23,7 @@ public class Main {
         Scanner input = new Scanner(System.in);
         ConfigurationService configurationService = new ConfigurationService();
         Configuration configuration = configurationService.readGson();
+        Config.TotalTicketsToRelease = configuration.getTotalTickets();
         Ticketpool ticketpool = new Ticketpool(configuration);
         System.out.println("Welcome to the Ticketing Simulation System");
         while (true) {

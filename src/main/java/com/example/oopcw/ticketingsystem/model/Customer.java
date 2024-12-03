@@ -83,30 +83,64 @@ public class Customer implements Runnable {
             try {
                 if (isActive) {
                     Thread.sleep(retrievalInterval * 1000L);
+                    Thread.currentThread().setName(customerId);
+
+
+                    int purchaseableTickets = ticketpool.getCurrentPoolSizePoolSize();
+                    // System.out.println("Available Tickets  = " + purchaseableTickets);
+                    //   System.out.println(" Amount To be Purchased = " + getTicketsPerPurchase());
+                    ticketpool.removeTicket2(this, purchasedTickets);
                     synchronized (ticketpool) {
-                        int availableTickets = ticketpool.getCurrentPoolSizePoolSize();
-                        System.out.println("------------------------------------------------------------------------------------------");
-                        System.out.println("Available Tickets  = " + availableTickets);
-                        System.out.println(Thread.currentThread().getName() + " Amount To be Purchased = " + getTicketsPerPurchase());
-                        if (availableTickets == 0) {
+                        if (ticketpool.getLargePoolSize() < this.getTicketsPerPurchase()) {
+                            Thread.currentThread().interrupt();
+                            System.out.println("-----------------------------------------------------===  " + ticketpool.getLargePoolSize());
+                            System.out.println("Insufficient Tickets Available---------------------------------------------------------=======");
+                            System.out.println(Thread.currentThread().getName() + "===========");
                             Thread.currentThread().interrupt();
                             if (Thread.interrupted()) {
-                                System.out.println("Exitning The Customer " + Thread.currentThread().getName() + " Total Tickets Purchased : " + this.getPurchasedTickets() + " : Tickets Sold-out");
+                                System.out.println("Tickets Are Sold Out");
                                 isActive = false;
+
                             }
-                        } else if (availableTickets >= getTicketsPerPurchase()) {
-                            ticketpool.removeTicketToTotalCapacity(getTicketsPerPurchase());
-                            ticketpool.removeTicket(this, purchasedTickets);
-                            //System.out.println("---------------------------------------------------------------------------------");
-                            //TODO LOG HERE THE BOTH AMOUNTS
-                        } else {
-                            System.out.println("Customer : " + customerId + " Insufficient amount of tickets");
-//                            System.out.println("TicktPool : " + ticketpool.getTicketPoolSize());
-                            ticketpool.wait();
-                            ticketpool.notifyAll();
+
                         }
                     }
+
+
+//                    if (purchaseableTickets == 0) {
+//                        Thread.currentThread().interrupt();
+//                        if (Thread.interrupted()) {
+//                            System.out.println("Exitning The Customer " + Thread.currentThread().getName() + " Total Tickets Purchased : " + this.getPurchasedTickets() + " : Tickets Sold-out");
+//                            isActive = false;
+//                        }
                 }
+//                    synchronized (ticketpool) {
+//
+//
+//
+////
+////                        System.out.println("------------------------------------------------------------------------------------------");
+////                        System.out.println("Available Tickets  = " + availableTickets);
+////                        System.out.println(Thread.currentThread().getName() + " Amount To be Purchased = " + getTicketsPerPurchase());
+////                        if (availableTickets == 0) {
+////                            Thread.currentThread().interrupt();
+////                            if (Thread.interrupted()) {
+////                                System.out.println("Exitning The Customer " + Thread.currentThread().getName() + " Total Tickets Purchased : " + this.getPurchasedTickets() + " : Tickets Sold-out");
+////                                isActive = false;
+////                            }
+////                        } else if (availableTickets >= getTicketsPerPurchase()) {
+////                            // ticketpool.removeTicketToTotalCapacity(getTicketsPerPurchase());
+////                            ticketpool.removeTicket2(this, purchasedTickets);
+////                            //System.out.println("---------------------------------------------------------------------------------");
+////                            //TODO LOG HERE THE BOTH AMOUNTS
+////                        } else {
+////                            System.out.println("Customer : " + customerId + " Insufficient amount of tickets");
+//////                            System.out.println("TicktPool : " + ticketpool.getTicketPoolSize());
+////                            ticketpool.wait();
+////                            ticketpool.notifyAll();
+////                        }
+//                    }
+
             } catch (InterruptedException e) {
                 System.out.println(Thread.currentThread().getName() + " was interrupted. Exiting...");
                 isActive = false;
