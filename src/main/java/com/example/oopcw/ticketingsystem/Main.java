@@ -88,35 +88,35 @@ public class Main {
     }
 
     private void startThePool(ArrayList<Thread> customers, ArrayList<Thread> vendors, Ticketpool ticketpool, Configuration configuration) {
+
+        for (int i = 0; i < Config.DefaultContacts; i++) {
+            Thread defaultVendor = new Thread(new Vendor(Config.TotalTicketsToRelease, Config.TicketsPerRelease, ticketpool, configuration));
+            // Config.TotalNumberOfVendors++;
+            vendors.add(defaultVendor);
+//            defaultVendor.start();
+        }
+        Config.TotalNumberOfVendors = vendors.size();
         for (Thread vendor : vendors) {
             vendor.start();
         }
         for (int i = 0; i < Config.DefaultContacts; i++) {
-            Thread defaultVendor = new Thread(new Vendor(Config.TotalTicketsToRelease, Config.TicketsPerRelease, ticketpool, configuration));
-            Config.TotalNumberOfVendors++;
-            defaultVendor.start();
+            if (i / 2 == 0) {
+                Thread defaultCustomer = new Thread(new Customer(Config.Vip, Config.TicketsPerPurchase, ticketpool, configuration));
+                customers.add(defaultCustomer);
+            } else {
+                Thread defaultCustomer = new Thread(new Customer(Config.NotVip, Config.TicketsPerPurchase, ticketpool, configuration));
+                customers.add(defaultCustomer);
+            }
         }
-
 
         for (Thread customer : customers) {
             customer.start();
-            customer.toString();
         }
-        for (int i = 0; i < Config.DefaultContacts; i++) {
-            if (i / 2 == 0) {
-                Thread defaultCustomer = new Thread(new Customer(Config.Vip, Config.TicketsPerPurchase, ticketpool, configuration));
-                defaultCustomer.start();
-                defaultCustomer.toString();
-            } else {
-                Thread defaultCustomer = new Thread(new Customer(Config.NotVip, Config.TicketsPerPurchase, ticketpool, configuration));
-                defaultCustomer.start();
-                defaultCustomer.toString();
-            }
-
-        }
-
 
     }
+
+
+    //--------------------------------------------------Dynamically Added Vendors -----------------------------------------------------------
 
     private void createVendors(ArrayList arrayList, Scanner input, Ticketpool ticketpool, Configuration configuration) {
 
@@ -132,6 +132,8 @@ public class Main {
 
         }
     }
+
+    //--------------------------------------------------Dynamically Added Customers-----------------------------------------------------------
 
     private void createCustomers(ArrayList arrayList, Scanner input, Ticketpool ticketpool, Configuration configuration) {
 

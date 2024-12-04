@@ -2,7 +2,6 @@ package com.example.oopcw.ticketingsystem.model;
 
 import com.example.oopcw.ticketingsystem.Configuration;
 import com.example.oopcw.ticketingsystem.constant.Config;
-import com.example.oopcw.ticketingsystem.constant.TicketStatus;
 import com.example.oopcw.ticketingsystem.validation.AutoIdGeneration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,7 +145,7 @@ public class Vendor implements Runnable {
     @Override
     public void run() {
         Thread.currentThread().setName(getVendorId());
-        Thread.currentThread().setPriority(Config.HighPriority);
+        Thread.currentThread().setPriority(Config.LowPriority);
 
         // Release Tickets List
         int totalTicketsForRelease;
@@ -185,10 +184,10 @@ public class Vendor implements Runnable {
                     // System.out.println(vendorId + " - Final Relase Tickets " + " = " + releasableTickets);
 
                     if (releasableTickets == 0) {
-                        logger.info("Ticket pool is full ");
+                        logger.info("Ticket pool is full , Waiting for the Tickets to be Purchased");
 
                     } else {
-                        logger.info("Vendor {} Added {} Tickets to the Ticket Pool", vendorId, releasableTickets);
+                        logger.info("Vendor {} Released {} Tickets to the Ticket Pool", vendorId, releasableTickets);
                         ticketpool.addTicket(this, releasableTickets);
 
                         //Substracting the releasable tickets from the total tickets
@@ -200,11 +199,11 @@ public class Vendor implements Runnable {
                     if (totalTicketsForRelease == 0) {
                         logger.info("Vendor {} has released all the tickets", vendorId);
                         logger.info("Total Released Tickets by Vendor {} is {}", vendorId, this.getTotalTicketsToRelease());
-                        logger.info("Ticket Release is Completed ------------------------------------------------------");
                         Thread.currentThread().interrupt();
                         if (Thread.interrupted()) {
-                            System.out.println("Vendor " + " - " + Thread.currentThread().getName() + " : " + "Total Released Tickets : " + this.getTotalTicketsToRelease());
-                            System.out.println("Vendor " + " - " + Thread.currentThread().getName() + " : " + "Ticket Release is Completed ------------------------------------------------------");
+                            logger.info("Ticket Release is Completed for Vendor {}", vendorId);
+                            logger.info("Vendor {} is Released from the Pool ", vendorId);
+
                         }
                     }
 
@@ -237,6 +236,7 @@ public class Vendor implements Runnable {
                 Thread.sleep(frequency * 1000L);
 
             } catch (InterruptedException e) {
+                logger.error("Ticket release interrupted for Vendor: {}", vendorId);
                 System.out.println("Ticket release interrupted for Vendor: " + vendorId);
                 Thread.currentThread().interrupt();
                 break;
