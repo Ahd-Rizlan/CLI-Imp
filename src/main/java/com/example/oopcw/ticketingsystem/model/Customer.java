@@ -4,7 +4,7 @@ import com.example.oopcw.ticketingsystem.Configuration;
 import com.example.oopcw.ticketingsystem.constant.Config;
 import com.example.oopcw.ticketingsystem.validation.AutoIdGeneration;
 
-import java.io.Serializable;
+
 import java.util.ArrayList;
 
 public class Customer implements Runnable {
@@ -13,10 +13,10 @@ public class Customer implements Runnable {
     private final Ticketpool ticketpool;
     private final ArrayList<Ticket> purchasedTickets;
 
-    private String customerId;
-    private boolean isVip;
-    private int ticketsPerPurchase;
-    private int retrievalInterval;
+    private final  String customerId;
+    private final boolean isVip;
+    private final  int ticketsPerPurchase;
+    private final  int retrievalInterval;
 
 
     public Customer(boolean isVip, int ticketsPerPurchase, Ticketpool ticketPool, Configuration config) {
@@ -50,9 +50,7 @@ public class Customer implements Runnable {
         return ticketsPerPurchase;
     }
 
-    public int getPurchasedTickets() {
-        return purchasedTickets.size();
-    }
+
 
     @Override
     public String toString() {
@@ -86,7 +84,7 @@ public class Customer implements Runnable {
                     Thread.currentThread().setName(customerId);
 
 
-                    int purchaseableTickets = ticketpool.getCurrentPoolSizePoolSize();
+                  //  int purchaseableTickets = ticketpool.getCurrentPoolSizePoolSize();
                     // System.out.println("Available Tickets  = " + purchaseableTickets);
                     //   System.out.println(" Amount To be Purchased = " + getTicketsPerPurchase());
                     ticketpool.removeTicket2(this, purchasedTickets);

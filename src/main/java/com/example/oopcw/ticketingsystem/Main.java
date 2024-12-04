@@ -122,7 +122,7 @@ public class Main {
 
         Validation validation = new Validation();
         int numberOfVendors = validation.getValidation(input, "Please enter the number of Vendors to be Added : ");
-        int totalTicketsToBeReleased = validation.getValidation(input, "Enter the Total Tickets to be Released : ");
+        //  int totalTicketsToBeReleased = validation.getValidation(input, "Enter the Total Tickets to be Released : ");
         int ticketsPerRelease = validation.getValidation(input, "Enter the Tickets per Release: ");
         int ticketReleaseRate = validation.getValidation(input, "Enter the Ticket Release Rate(seconds): ");
         for (int i = 0; i < numberOfVendors; i++) {

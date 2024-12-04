@@ -3,12 +3,17 @@ package com.example.oopcw.ticketingsystem.model;
 import com.example.oopcw.ticketingsystem.Configuration;
 import com.example.oopcw.ticketingsystem.constant.Config;
 import com.example.oopcw.ticketingsystem.constant.TicketStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class Ticketpool {
+    private static final Logger logger = LoggerFactory.getLogger(Ticketpool.class);
+
+
     private final List<Ticket> ticketPool;
     private final int totalTickets;
     private final int maxCapacity;
@@ -75,17 +80,21 @@ public class Ticketpool {
     }
 
     public synchronized int addTicketsOnMainPool(Vendor vendor) {
+
         int tickerCount = (Config.TotalTicketsToRelease / Config.TotalNumberOfVendors);
+        logger.debug("Total Tickets to be released : {}", Config.TotalTicketsToRelease);
+        logger.debug("Total Number of Vendors : {}", Config.TotalNumberOfVendors);
+        logger.debug("Tickets to be released by each Vendor : {}", tickerCount);
 
         //updating the total number of tickets
         //   currentSizeOfLargePool = currentSizeOfLargePool + tickerCount;
 
-        System.out.println("Vendor trying to add " + tickerCount);
+        //   System.out.println("Vendor trying to add " + tickerCount);
+        logger.info("Maximum Tickets Released by Vendor : {} is {} ", vendor.getVendorId(), tickerCount);
+
         //  ArrayList<Ticket> TotalTicketsToBeReleased = new ArrayList<>();
-        int TotalTicketsToBeReleased = tickerCount;
-        System.out.println(vendor.getVendorId());
-        System.out.println("Vendor Added " + tickerCount + " Tickets");
-        return TotalTicketsToBeReleased;
+        //  System.out.println("Vendor Added " + tickerCount + " Tickets");
+        return tickerCount;
     }
 
 //    public synchronized int addTicketsOnMainPool(Configuration configuration) {
@@ -186,9 +195,7 @@ public class Ticketpool {
                 System.out.println("Tickets Are Sold Out");
             }
 
-        }
-
-        if (ticketPool.size() < customer.getTicketsPerPurchase()) {
+        } else if (ticketPool.size() < customer.getTicketsPerPurchase()) {
 //            System.out.println("-----------------------------------------------------===  " + LargePoolSize);
 //            if (LargePoolSize < customer.getTicketsPerPurchase()) {
 //                System.out.println("Insufficient Tickets Available---------------------------------------------------------=======");

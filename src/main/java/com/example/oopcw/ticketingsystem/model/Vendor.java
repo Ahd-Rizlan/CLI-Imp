@@ -4,15 +4,17 @@ import com.example.oopcw.ticketingsystem.Configuration;
 import com.example.oopcw.ticketingsystem.constant.Config;
 import com.example.oopcw.ticketingsystem.constant.TicketStatus;
 import com.example.oopcw.ticketingsystem.validation.AutoIdGeneration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
 public class Vendor implements Runnable {
 
     private static final AutoIdGeneration vendorAutoIdGeneration = new AutoIdGeneration(0);
+    private static final Logger logger = LoggerFactory.getLogger(Vendor.class);
     private final Ticketpool ticketpool;
     private final ArrayList<Ticket> releasingTickets;
-
     private final String vendorId;
     private final int frequency;
     private int totalTicketsToRelease = 0;
@@ -151,43 +153,54 @@ public class Vendor implements Runnable {
 
         //No of TOTAL TICKETS TO BE RELEASED
         totalTicketsForRelease = ticketpool.addTicketsOnMainPool(this);
-        System.out.println("Vendor " + vendorId + " is Releasing " + totalTicketsForRelease + " Tickets");
+        // System.out.println("Vendor " + vendorId + " is Releasing " + totalTicketsForRelease + " Tickets");
 
         //Setting the Total Tickets to be Released
         this.setTotalTicketsToRelease(totalTicketsForRelease);
-        System.out.println("Total Tickets to be Released by " + vendorId + " = " + this.getTotalTicketsToRelease());
+        logger.debug("Setting the Total Tickets to be Released by {} = {}", vendorId, this.getTotalTicketsToRelease());
+        //  System.out.println("Total Tickets to be Released by " + vendorId + " = " + this.getTotalTicketsToRelease());
 
         // boolean IsActive = true;
+        logger.debug("Vendor {} is Releasing Tickets in to the pool until the Maximum Tickets are {} Over , on the rate of {} and in a Interval of {}", vendorId, this.getTotalTicketsToRelease(), this.getTicketsPerRelease(), this.frequency);
         while (totalTicketsForRelease > 0) {
             try {
 
-                if (this.ticketsPerRelease <= totalTicketsForRelease) {
-                    System.out.println(vendorId + "Tickets Per Release = " + ticketsPerRelease);
-                    System.out.println(vendorId + "Tickets that canbe Released  = " + totalTicketsForRelease);
-                    // totalTicketsForRelease = this.ticketsPerRelease;
-                }
+//                if (this.ticketsPerRelease <= totalTicketsForRelease) {
+//                  //  logger.debug("Remaining Tickets in hand is {} and Maximum Tickets that should be released to the pool is {} ");
+//                    logger.debug("if Total Tickets in hand = {} lessthan Maximum Tickets Per Release = {} , release all the Tickets in Hand {} ", ticketsPerRelease, totalTicketsForRelease, ticketsPerRelease);
+//                    System.out.println(vendorId + "Tickets Per Release = " + ticketsPerRelease);
+//                    System.out.println(vendorId + "Tickets that canbe Released  = " + totalTicketsForRelease);
+//                    // totalTicketsForRelease = this.ticketsPerRelease;
+//                }
                 synchronized (ticketpool) {
                     int releasableTickets = Math.min(ticketsPerRelease, (ticketpool.getMaxPoolCapacity() - ticketpool.getTicketPoolSize()));
                     releasableTickets = Math.min(releasableTickets, totalTicketsForRelease);
 
+                    logger.debug("Tickets Per Release = {} / Tickets in Hand = {} /Available Pool Capacity = {}", ticketsPerRelease, totalTicketsForRelease, releasableTickets);
+                    logger.debug("Vendor {} is Releasing the minimum amount from the above values {} Tickets to the Pool", vendorId, releasableTickets);
+                    logger.info("Tickets Per Release = {} / Tickets in Hand = {} /Available Pool Capacity = {}", ticketsPerRelease, totalTicketsForRelease, releasableTickets);
 
-                    System.out.println(vendorId + "Tickets Per Release = " + ticketsPerRelease + " / Tickets that canbe Released  = " + totalTicketsForRelease + " /Releasable Tickets = " + releasableTickets);
+                    // System.out.println(vendorId + "Tickets Per Release = " + ticketsPerRelease + " / Tickets that canbe Released  = " + totalTicketsForRelease + " /Releasable Tickets = " + releasableTickets);
 
-                    System.out.println(vendorId + " - Final Relase Tickets " + " = " + releasableTickets);
+                    // System.out.println(vendorId + " - Final Relase Tickets " + " = " + releasableTickets);
 
                     if (releasableTickets == 0) {
-                        System.out.println("All Tickets are Released by " + vendorId);
+                        logger.info("Ticket pool is full ");
+
+                    } else {
+                        logger.info("Vendor {} Added {} Tickets to the Ticket Pool", vendorId, releasableTickets);
+                        ticketpool.addTicket(this, releasableTickets);
+
+                        //Substracting the releasable tickets from the total tickets
+                        logger.debug("Vendor {} is Substracting the releasable tickets {} from the total tickets {}", vendorId, releasableTickets, totalTicketsForRelease);
+                        totalTicketsForRelease -= releasableTickets;
+                        logger.debug("Remaining Tickets to Release for Vendor {} is {}", vendorId, totalTicketsForRelease);
 
                     }
-
-                    ticketpool.addTicket(this, releasableTickets);
-                    //Substracting the releasable tickets from the total tickets
-                    totalTicketsForRelease -= releasableTickets;
                     if (totalTicketsForRelease == 0) {
-                        System.out.println("All Tickets are Released by " + vendorId);
-                    }
-                    System.out.println("Available Tickets for " + vendorId + " = " + totalTicketsForRelease);
-                    if (totalTicketsForRelease == 0) {
+                        logger.info("Vendor {} has released all the tickets", vendorId);
+                        logger.info("Total Released Tickets by Vendor {} is {}", vendorId, this.getTotalTicketsToRelease());
+                        logger.info("Ticket Release is Completed ------------------------------------------------------");
                         Thread.currentThread().interrupt();
                         if (Thread.interrupted()) {
                             System.out.println("Vendor " + " - " + Thread.currentThread().getName() + " : " + "Total Released Tickets : " + this.getTotalTicketsToRelease());
