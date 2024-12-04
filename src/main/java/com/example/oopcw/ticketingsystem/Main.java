@@ -23,6 +23,7 @@ public class Main {
         Scanner input = new Scanner(System.in);
         ConfigurationService configurationService = new ConfigurationService();
         Configuration configuration = configurationService.readGson();
+        Config.TotalTicketsToRelease = configuration.getTotalTickets();
         Ticketpool ticketpool = new Ticketpool(configuration);
         System.out.println("Welcome to the Ticketing Simulation System");
         while (true) {
@@ -41,7 +42,6 @@ public class Main {
                     simulation(ticketpool, configuration);
                     break;
                 case "2":
-                    
                     configurationService.setConfigurationFile();
                     break;
                 case "3":
@@ -62,6 +62,7 @@ public class Main {
                     1. Configure the number of Vendors to be Added 
                     2. Configure the number of Customers to be Added 
                     3. Save and Run Or Run With Default Settings
+                    4. Return to main Screen 
                     Please enter your choice :
                     ----------------------------------------------""");
 
@@ -74,7 +75,11 @@ public class Main {
                     break;
                 case "3":
                     startThePool(customers, vendors, ticketpool, configuration);
+
                     break;
+                case "4":
+                    return;
+
                 default:
                     System.out.println("Invalid choice");
             }
@@ -83,47 +88,52 @@ public class Main {
     }
 
     private void startThePool(ArrayList<Thread> customers, ArrayList<Thread> vendors, Ticketpool ticketpool, Configuration configuration) {
-        for (Thread vendor : vendors) {
-            vendor.start();
-            vendor.toString();
-        }
+
         for (int i = 0; i < Config.DefaultContacts; i++) {
             Thread defaultVendor = new Thread(new Vendor(Config.TotalTicketsToRelease, Config.TicketsPerRelease, ticketpool, configuration));
-            defaultVendor.start();
+            // Config.TotalNumberOfVendors++;
+            vendors.add(defaultVendor);
+//            defaultVendor.start();
         }
-
-
-        for (Thread customer : customers) {
-            customer.start();
-            customer.toString();
+        Config.TotalNumberOfVendors = vendors.size();
+        for (Thread vendor : vendors) {
+            vendor.start();
         }
         for (int i = 0; i < Config.DefaultContacts; i++) {
             if (i / 2 == 0) {
                 Thread defaultCustomer = new Thread(new Customer(Config.Vip, Config.TicketsPerPurchase, ticketpool, configuration));
-                defaultCustomer.start();
-                defaultCustomer.toString();
+                customers.add(defaultCustomer);
             } else {
                 Thread defaultCustomer = new Thread(new Customer(Config.NotVip, Config.TicketsPerPurchase, ticketpool, configuration));
-                defaultCustomer.start();
-                defaultCustomer.toString();
+                customers.add(defaultCustomer);
             }
         }
 
+        for (Thread customer : customers) {
+            customer.start();
+        }
 
     }
+
+
+    //--------------------------------------------------Dynamically Added Vendors -----------------------------------------------------------
 
     private void createVendors(ArrayList arrayList, Scanner input, Ticketpool ticketpool, Configuration configuration) {
 
         Validation validation = new Validation();
         int numberOfVendors = validation.getValidation(input, "Please enter the number of Vendors to be Added : ");
-        int totalTicketsToBeReleased = validation.getValidation(input, "Enter the Total Tickets to be Released : ");
+        //  int totalTicketsToBeReleased = validation.getValidation(input, "Enter the Total Tickets to be Released : ");
         int ticketsPerRelease = validation.getValidation(input, "Enter the Tickets per Release: ");
         int ticketReleaseRate = validation.getValidation(input, "Enter the Ticket Release Rate(seconds): ");
         for (int i = 0; i < numberOfVendors; i++) {
-            Thread vendor = new Thread(new Vendor(totalTicketsToBeReleased, ticketsPerRelease, ticketReleaseRate, ticketpool, configuration));
+            Config.TotalNumberOfVendors++;
+            Thread vendor = new Thread(new Vendor(ticketsPerRelease, ticketReleaseRate, ticketpool, configuration));
             arrayList.add(vendor);
+
         }
     }
+
+    //--------------------------------------------------Dynamically Added Customers-----------------------------------------------------------
 
     private void createCustomers(ArrayList arrayList, Scanner input, Ticketpool ticketpool, Configuration configuration) {
 
