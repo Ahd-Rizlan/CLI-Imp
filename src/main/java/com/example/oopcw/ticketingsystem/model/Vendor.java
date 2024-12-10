@@ -20,16 +20,16 @@ public class Vendor implements Runnable {
     private int ticketsPerRelease;
 
 
-    public Vendor(int totalTicketsToRelease, int ticketsPerRelease, Ticketpool ticketpool, Configuration config) {
+    public Vendor(int ticketsPerRelease, Ticketpool ticketpool, Configuration configuration) {
         this.vendorId = vendorAutoIdGeneration.generateAutoId("VId");
-        this.frequency = config.getTicketReleaseRate();
+        this.frequency = configuration.getTicketReleaseRate();
         this.ticketsPerRelease = ticketsPerRelease;
         this.releasingTickets = new ArrayList<>();
         this.ticketpool = ticketpool;
 
     }
 
-    public Vendor(int totalTicketsToRelease, int ticketsPerRelease, int frequency, Ticketpool ticketpool, Configuration config) {
+    public Vendor(int ticketsPerRelease, int frequency, Ticketpool ticketpool, Configuration configuration) {
         this.vendorId = vendorAutoIdGeneration.generateAutoId("VId");
         this.frequency = frequency;
         this.ticketsPerRelease = ticketsPerRelease;

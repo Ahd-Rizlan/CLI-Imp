@@ -1,9 +1,7 @@
 package com.example.oopcw.ticketingsystem;
 
 import com.example.oopcw.ticketingsystem.constant.Config;
-import com.example.oopcw.ticketingsystem.model.Customer;
-import com.example.oopcw.ticketingsystem.model.Ticketpool;
-import com.example.oopcw.ticketingsystem.model.Vendor;
+import com.example.oopcw.ticketingsystem.model.*;
 import com.example.oopcw.ticketingsystem.service.ConfigurationService;
 import com.example.oopcw.ticketingsystem.validation.Validation;
 
@@ -90,7 +88,8 @@ public class Main {
     private void startThePool(ArrayList<Thread> customers, ArrayList<Thread> vendors, Ticketpool ticketpool, Configuration configuration) {
 
         for (int i = 0; i < Config.DefaultContacts; i++) {
-            Thread defaultVendor = new Thread(new Vendor(Config.TotalTicketsToRelease, Config.TicketsPerRelease, ticketpool, configuration));
+            Thread defaultVendor = new Thread(new Vendor(Config.TicketsPerRelease, ticketpool, configuration));
+
             // Config.TotalNumberOfVendors++;
             vendors.add(defaultVendor);
 //            defaultVendor.start();
@@ -101,10 +100,10 @@ public class Main {
         }
         for (int i = 0; i < Config.DefaultContacts; i++) {
             if (i / 2 == 0) {
-                Thread defaultCustomer = new Thread(new Customer(Config.Vip, Config.TicketsPerPurchase, ticketpool, configuration));
+                Thread defaultCustomer = new Thread(new VipCustomer(Config.TicketsPerPurchase, ticketpool, configuration));
                 customers.add(defaultCustomer);
             } else {
-                Thread defaultCustomer = new Thread(new Customer(Config.NotVip, Config.TicketsPerPurchase, ticketpool, configuration));
+                Thread defaultCustomer = new Thread(new RegularCustomer(Config.TicketsPerPurchase, ticketpool, configuration));
                 customers.add(defaultCustomer);
             }
         }
@@ -122,7 +121,6 @@ public class Main {
 
         Validation validation = new Validation();
         int numberOfVendors = validation.getValidation(input, "Please enter the number of Vendors to be Added : ");
-        //  int totalTicketsToBeReleased = validation.getValidation(input, "Enter the Total Tickets to be Released : ");
         int ticketsPerRelease = validation.getValidation(input, "Enter the Tickets per Release: ");
         int ticketReleaseRate = validation.getValidation(input, "Enter the Ticket Release Rate(seconds): ");
         for (int i = 0; i < numberOfVendors; i++) {
@@ -141,10 +139,17 @@ public class Main {
         int numberOfCustomers = validation.getValidation(input, "Please enter the number of Customers to be Added : ");
         boolean isVIp = validation.getBoolean(input, "Customer is a Vip ((Yes/Y) or (No/N)) : ");
         int ticketsPerPurchase = validation.getValidation(input, "Enter the Tickets per Purchase : ");
-        int ticketPurchaseRate = validation.getValidation(input, "Enter the Ticket Purchase Rate(seconds) : ");
+        // int ticketPurchaseRate = validation.getValidation(input, "Enter the Ticket Purchase Rate(seconds) : ");
         for (int i = 0; i < numberOfCustomers; i++) {
-            Thread customer = new Thread(new Customer(isVIp, ticketsPerPurchase, ticketPurchaseRate, ticketpool, configuration));
-            arrayList.add(customer);
+            if (isVIp) {
+                Thread customer = new Thread(new VipCustomer(ticketsPerPurchase, ticketpool, configuration));
+                customer.setPriority(Config.VipPriority);
+                arrayList.add(customer);
+            } else {
+                Thread customer = new Thread(new RegularCustomer(ticketsPerPurchase, ticketpool, configuration));
+                customer.setPriority(Config.LowPriority);
+                arrayList.add(customer);
+            }
         }
     }
 
